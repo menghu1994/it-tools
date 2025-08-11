@@ -1,3 +1,3 @@
 import { randIntFromInterval } from '@/utils/random';
 
-export const generatePort = () => randIntFromInterval(1024, 65535);
+export const generatePort = (min: number, max: number) => randIntFromInterval(min, max);

@@ -3,13 +3,26 @@ import { generatePort } from './random-port-generator.model';
 import { computedRefreshable } from '@/composable/computedRefreshable';
 import { useCopy } from '@/composable/copy';
 
-const [port, refreshPort] = computedRefreshable(() => String(generatePort()));
+const min = ref<number>(1024)
+const max = ref<number>(65535)
+const [port, refreshPort] = computedRefreshable(() => String(generatePort(min.value, max.value)));
 
 const { copy } = useCopy({ source: port, text: 'Port copied to the clipboard' });
+
 </script>
 
 <template>
   <c-card>
+    <div mt-4 flex gap-10px>
+      <div>
+        <div>Min:</div>
+        <n-input-number v-model:value="min" placeholder="min" :min="0" />
+      </div>
+      <div>
+        <div>Max:</div>
+        <n-input-number v-model:value="max" placeholder="max" :min="min" />
+      </div>
+    </div>
     <div class="port">
       {{ port }}
     </div>

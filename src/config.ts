@@ -56,7 +56,7 @@ export const config = figue({
   showBanner: {
     doc: 'Show the banner',
     format: 'boolean',
-    default: false,
+    default: true,
     env: 'VITE_SHOW_BANNER',
   },
   showSponsorBanner: {
