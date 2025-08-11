@@ -67,7 +67,7 @@ const toolDescription = computed<string>(() => t(`tools.${i18nKey.value}.descrip
   flex-wrap: wrap;
   gap: 16px;
 
-  ::v-deep(& > *) {
+  ::v-deep(& > *:not(.w-full)) {
     flex: 0 1 600px;
   }
 }

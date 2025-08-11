@@ -195,6 +195,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     RsaKeyPairGenerator: typeof import('./src/tools/rsa-key-pair-generator/rsa-key-pair-generator.vue')['default']
     SafelinkDecoder: typeof import('./src/tools/safelink-decoder/safelink-decoder.vue')['default']
+    ScheduleClass: typeof import('./src/tools/schedule-class/schedule-class.vue')['default']
     SlugifyString: typeof import('./src/tools/slugify-string/slugify-string.vue')['default']
     SpanCopyable: typeof import('./src/components/SpanCopyable.vue')['default']
     SqlPrettify: typeof import('./src/tools/sql-prettify/sql-prettify.vue')['default']
