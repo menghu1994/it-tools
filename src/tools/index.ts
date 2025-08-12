@@ -47,6 +47,9 @@ import { tool as caseConverter } from './case-converter';
 import { tool as chmodCalculator } from './chmod-calculator';
 import { tool as chronometer } from './chronometer';
 import { tool as colorConverter } from './color-converter';
+import { tool as colorSpace } from './color-space';
+import { tool as colorGradient } from './color-gradient';
+import { tool as tableGenerator } from './table-generator';
 import { tool as dateTimeConverter } from './date-time-converter';
 import { tool as deviceInformation } from './device-information';
 import { tool as cypher } from './encryption';
@@ -151,6 +154,12 @@ export const toolsByCategory: ToolCategory[] = [
       regexTester,
       regexMemo,
     ],
+  },
+  {
+    name: 'CSS',
+    components: [
+      colorSpace, colorGradient, tableGenerator
+    ]
   },
   {
     name: 'Network',
