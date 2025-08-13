@@ -1,24 +1,19 @@
 <template>
   <div>
-    <div class="controls">
-      <div>
-        <label>Columns: <input type="number" v-model.number="cols" min="1"></label>
-        <label>Rows: <input type="number" v-model.number="rows" min="1"></label>
+    <div class="mb-14">
+      <div flex gap-2 items-center>
+        <label>列: <input type="number" v-model.number="cols" min="1"></label>
+        <label>行: <input type="number" v-model.number="rows" min="1"></label>
         <c-button @click="generateTable">Generate</c-button>
       </div>
-      <div>
-        <c-button @click="addRow">Add Row</c-button>
-        <c-button @click="addCol">Add Col</c-button>
-        <c-button @click="removeRow">Remove Row</c-button>
-        <c-button @click="removeCol">Remove Col</c-button>
-        <c-button @click="mergeCells" :disabled="!selectedCells.length">Merge Cells</c-button>
-      </div>
-      <div>
+      <div flex gap-2 items-center>
+        <c-button @click="addRow">添加一行</c-button>
+        <c-button @click="addCol">添加一列</c-button>
+        <c-button @click="removeRow">移除一行</c-button>
+        <c-button @click="removeCol">移除一列</c-button>
+        <c-button @click="mergeCells" :disabled="!selectedCells.length">合并单元格</c-button>
         <label>
-          <input type="checkbox" v-model="bsEnter"> Compact Formatting
-        </label>
-        <label>
-          <input type="checkbox" v-model="clearTh"> Hide Header
+          <input type="checkbox" v-model="clearTh"> 隐藏头
         </label>
       </div>
     </div>
@@ -31,7 +26,8 @@
               :class="'c'+colIndex"
               @mousedown="startSelection($event, 'th', colIndex, 0)"
               @mousemove="dragSelection($event, 'th', colIndex, 0)">
-            <div contenteditable="true" @blur="exportHTML">&nbsp;</div>
+            <div contenteditable="true" @blur="exportHTML">{{ 'h' + colIndex }}</div>
+            <div class="resizer" v-if="colIndex !== 0"></div>
           </th>
         </tr>
         </thead>
@@ -42,38 +38,55 @@
               :colspan="cell.colspan"
               :rowspan="cell.rowspan"
               @mousedown="startSelection($event, 'td', cellIndex, rowIndex)"
-              @mousemove="dragSelection($event, 'td', cellIndex, rowIndex)">
-            <div contenteditable="true" @blur="exportHTML">&nbsp;</div>
+              @mousemove="dragSelection($event, 'td', cellIndex, rowIndex)"
+              @mouseup="isMouseDown = false">
+            <div contenteditable="true" @blur="exportHTML">{{ rowIndex }}{{ cellIndex }}</div>
+            <div class="resizer" v-if="cellIndex !== 0"
+                 @mousedown="startRowResize($event, 'td', cellIndex, rowIndex)"
+                 @mousemove="startRowDrag($event, 'td', cellIndex, rowIndex)"></div>
           </td>
         </tr>
         </tbody>
       </table>
+      <div class="toolbar toolbar_v">
+        <div class="toolbar__content">
+          <div class="toolbar__insertion-button" style="top: -12.5px;"><span>●</span>
+            <div class="toolbar__plus-btn">+</div>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar toolbar_h">
+        <div class="toolbar__content">
+          <div class="toolbar__insertion-button" style="left: -12.5px;"><span>●</span>
+            <div class="toolbar__plus-btn">+</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="export-area">
-      <textarea id="export" v-model="exportedHTML" readonly></textarea>
+      <textarea-copyable id="export" :value="exportedHTML"></textarea-copyable>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-let cols = ref(5)
-let rows = ref(5)
-let columns = ref([])
-let tableData = ref([])
-let isMouseDown = ref(false)
-let isDragging = ref(false)
-let startCell = ref(null)
-let selectedCells = ref([])
-let bsEnter = ref(false)
-let clearTh = ref(false)
-let exportedHTML = ref('')
+let cols = ref(5);
+let rows = ref(5);
+let columns = ref([]);
+let tableData = ref([]);
+let isMouseDown = ref(false);
+let isDragging = ref(false);
+let startCell = ref(null);
+let selectedCells = ref([]);
+let clearTh = ref(false);
+let exportedHTML = ref('');
 
 onMounted(() => {
   generateTable();
-})
+});
 
 function generateTable() {
   columns.value = Array.from({ length: cols.value }, (_, i) => i);
@@ -82,8 +95,8 @@ function generateTable() {
     cells: Array.from({ length: cols.value }, (_, colIndex) => ({
       colspan: 1,
       rowspan: 1,
-      classes: [`c${colIndex}`, `r${rowIndex}`]
-    }))
+      classes: [`c${colIndex}`, `r${rowIndex}`],
+    })),
   }));
 
   exportHTML();
@@ -95,21 +108,21 @@ function addRow() {
     cells: Array.from({ length: cols.value }, (_, colIndex) => ({
       colspan: 1,
       rowspan: 1,
-      classes: [`c${colIndex}`, `r${rows.value-1}`]
-    }))
+      classes: [`c${colIndex}`, `r${rows.value - 1}`],
+    })),
   });
   exportHTML();
 }
 
 function addCol() {
   cols.value++;
-  columns.value.push(cols.value-1);
+  columns.value.push(cols.value - 1);
 
   tableData.value.forEach((row, rowIndex) => {
     row.cells.push({
       colspan: 1,
       rowspan: 1,
-      classes: [`c${cols.value-1}`, `r${rowIndex}`]
+      classes: [`c${cols.value - 1}`, `r${rowIndex}`],
     });
   });
   exportHTML();
@@ -118,9 +131,8 @@ function addCol() {
 function removeRow() {
   if (rows.value <= 1) return;
 
-  // Adjust rowspans for cells that span into the last row
-  tableData.value[rows.value-2].cells.forEach(cell => {
-    if (cell.rowspan > 1 && (cell.rowspan + rows.value-2) >= rows.value) {
+  tableData.value[rows.value - 2].cells.forEach(cell => {
+    if (cell.rowspan > 1 && (cell.rowspan + rows.value - 2) >= rows.value) {
       cell.rowspan--;
     }
   });
@@ -133,7 +145,6 @@ function removeRow() {
 function removeCol() {
   if (cols.value <= 1) return;
 
-  // Adjust colspans for cells that span into the last column
   tableData.value.forEach(row => {
     row.cells.forEach(cell => {
       const cellCol = parseInt(cell.classes.find(c => c.startsWith('c')).substring(1));
@@ -146,7 +157,6 @@ function removeCol() {
   cols.value--;
   columns.value.pop();
 
-  // Remove last cell from each row
   tableData.value.forEach(row => {
     row.cells.pop();
   });
@@ -160,7 +170,7 @@ function getCellClasses(cell) {
 
 function isCellSelected(cell) {
   return selectedCells.value.some(selected =>
-    selected.classes.some(cls => cell.classes.includes(cls))
+    selected.classes.every(cls => cell.classes.includes(cls)),
   );
 }
 
@@ -186,19 +196,27 @@ function dragSelection(event, cellType, colIndex, rowIndex) {
   selectCells(startCell.value, endCell);
 }
 
+function startRowResize(event, cellType, colIndex, rowIndex) {
+  if (event.button !== 0) return;
+
+}
+
+function startRowDrag(event, cellType, colIndex, rowIndex) {
+  if (event.button !== 0) return;
+
+}
+
 function selectCells(startCell, endCell) {
   const startCols = getCellCols(startCell);
   const startRows = getCellRows(startCell);
   const endCols = getCellCols(endCell);
   const endRows = getCellRows(endCell);
 
-  // Find min/max cols.value and rows
   const minCol = Math.min(...startCols, ...endCols);
   const maxCol = Math.max(...startCols, ...endCols);
   const minRow = Math.min(...startRows, ...endRows);
   const maxRow = Math.max(...startRows, ...endRows);
 
-  // Select all cells in the rectangle
   selectedCells.value = [];
   for (let row = minRow; row <= maxRow; row++) {
     for (let col = minCol; col <= maxCol; col++) {
@@ -248,7 +266,6 @@ function removeSelection() {
 function mergeCells() {
   if (selectedCells.value.length < 2) return;
 
-  // Calculate colspan and rowspan
   const minCol = Math.min(...selectedCells.value.flatMap(cell => getCellCols(cell)));
   const maxCol = Math.max(...selectedCells.value.flatMap(cell => getCellCols(cell)));
   const minRow = Math.min(...getCellRows(selectedCells.value[0]));
@@ -257,18 +274,14 @@ function mergeCells() {
   const colspan = maxCol - minCol + 1;
   const rowspan = maxRow - minRow + 1;
 
-  // Get all unique classes from selected cells
   const allClasses = [...new Set(selectedCells.value.flatMap(cell => cell.classes))];
 
-  // Find the first cell in the selection (top-left)
   const firstCell = selectedCells.value[0];
 
-  // Create merged cell
   firstCell.colspan = colspan;
   firstCell.rowspan = rowspan;
   firstCell.classes = allClasses.filter(cls => !cls.startsWith('s'));
 
-  // Remove other selected cells
   const cellsToRemove = selectedCells.value.slice(1);
   for (const cell of cellsToRemove) {
     const rowIndex = getCellRows(cell)[0];
@@ -283,10 +296,10 @@ function mergeCells() {
 }
 
 function exportHTML() {
-  const enter = bsEnter.value ? "" : "\n";
-  const bs = bsEnter.value ? "" : "    ";
+  const enter = '\n';
+  const bs = '    ';
 
-  let theadHTML = "";
+  let theadHTML = '';
   if (!clearTh.value) {
     theadHTML = generateHeaderHTML(enter, bs);
   }
@@ -301,11 +314,11 @@ function exportHTML() {
 }
 
 function generateHeaderHTML(enter, bs) {
-  let html = "";
+  let html = '';
   html += `${enter}${bs}${bs}<tr>${enter}${bs}`;
 
   for (let i = 0; i < columns.value.length; i++) {
-    const cellContent = "&nbsp;"; // You might want to get actual content here
+    const cellContent = '';
     if (i > 0) {
       html += `${enter}${bs}<th>${cellContent}</th>`;
     } else {
@@ -318,7 +331,7 @@ function generateHeaderHTML(enter, bs) {
 }
 
 function generateBodyHTML(enter, bs) {
-  let html = "";
+  let html = '';
 
   for (let rowIndex = 0; rowIndex < tableData.value.length; rowIndex++) {
     const row = tableData.value[rowIndex];
@@ -326,7 +339,7 @@ function generateBodyHTML(enter, bs) {
 
     for (let cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
       const cell = row.cells[cellIndex];
-      const cellContent = "&nbsp;"; // You might want to get actual content here
+      const cellContent = '';
 
       if (cellIndex > 0) {
         html += `${enter}${bs}<td`;
@@ -354,60 +367,107 @@ function generateBodyHTML(enter, bs) {
 </script>
 
 <style scoped lang="less">
-.controls {
-  margin-bottom: 20px;
-}
-.table-wrap {
-  margin-bottom: 20px;
-}
 #export {
   width: 100%;
   height: 200px;
+  overflow-x: hidden;
 }
-.s {
-  background-color: #d4edff;
-}
-table {
-  width: 100%;
-}
-table, td ,th{
+
+table, td, th {
   border: solid 1px black;
 }
-table>thead>tr>th{
-  font-weight: bolder;
-  background: #dedede;
-}
 
 table {
+  width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
+  table-layout: fixed;
+  th {
+    font-weight: bolder;
+    background: #dedede;
+  }
+  td, th {
+    padding: 8px;
+  }
+  td div, th div {
+    outline: none;
+  }
+  .s {
+    background-color: #d4edff;
+  }
 }
 
-td, th{
-  padding: 8px;
+.table-wrap {
+  position: relative;
+
+  .toolbar {
+    position: absolute;
+    top: 0;
+  }
+  .toolbar_h {
+    top: -30px;
+    width: 100%;
+    height: 30px;
+  }
+  .toolbar_v {
+    left: -30px;
+    width: 30px;
+    height: 100%;
+  }
+  .toolbar__insertion-button {
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    span {
+      position: absolute;
+      text-align: center;
+      color: #cfcfcf;
+      width: 100%;
+      margin-top: -1px;
+    }
+    .toolbar__plus-btn {
+      position: relative;
+      background: #91cfff;
+      border-radius: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      opacity: 0;
+    }
+    &:hover {
+      .toolbar__plus-btn {
+        opacity: 1;
+      }
+    }
+  }
+
+  .resizer {
+    position: absolute;
+    bottom: 0;
+    overflow: visible;
+    width: 5px;
+    top: 0;
+    cursor: col-resize;
+    z-index: 3;
+    margin-left: -12px;
+
+    &:after {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: #91cfff;
+      left: 2px;
+      opacity: 0;
+    }
+
+    &:hover:after {
+      opacity: 1;
+    }
+  }
 }
 
-.s {
-  background: #d0eaf9;
-}
 
-#rows, #cols {
-  width: 20px;
-}
-
-td div,th div {
-  outline: none;
-}
-
-#tableWrap {
-  padding: 10px;
-}
-
-input[type="button"] {
-  width: 110px;
-}
-i.annotation{
-  color: gray;
-  font-size: 10px;
-}
 </style>
