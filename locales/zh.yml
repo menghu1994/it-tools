@@ -121,6 +121,11 @@ tools:
   color-gradient:
     title: Color 渐变
     description: 背景渐变色生成
+
+  table-generator:
+    title: 表格生成器
+    description: 自定义表格
+
   bcrypt:
     title: 加密
     description: 使用bcrypt对文本字符串进行哈希和比较。Bcrypt是一个基于Blowfish密码的密码哈希函数。
