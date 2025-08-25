@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { NIcon, useThemeVars } from 'naive-ui';
-
 import { RouterLink } from 'vue-router';
 import { Heart, Home2, Menu2 } from '@vicons/tabler';
 
@@ -25,6 +24,7 @@ const { t } = useI18n();
 
 const toolStore = useToolStore();
 const { favoriteTools, toolsByCategory } = storeToRefs(toolStore);
+
 
 const tools = computed<ToolCategory[]>(() => [
   ...(favoriteTools.value.length > 0 ? [{ name: t('tools.categories.favorite-tools'), components: favoriteTools.value }] : []),
@@ -67,13 +67,13 @@ const tools = computed<ToolCategory[]>(() => [
 
             v{{ version }}
 
-            <template v-if="commitSha && commitSha.length > 0">
-              -
-              <c-link target="_blank" rel="noopener" type="primary"
-                :href="`https://github.com/CorentinTh/it-tools/tree/${commitSha}`">
-                {{ commitSha }}
-              </c-link>
-            </template>
+<!--            <template v-if="commitSha && commitSha.length > 0">-->
+<!--              - -->
+<!--              <c-link target="_blank" rel="noopener" type="primary"-->
+<!--                :href="`https://github.com/CorentinTh/it-tools/tree/${commitSha}`">-->
+<!--                {{ commitSha }}-->
+<!--              </c-link>-->
+<!--            </template>-->
           </div>
           <!-- <div>
             © {{ new Date().getFullYear() }}
@@ -114,6 +114,7 @@ const tools = computed<ToolCategory[]>(() => [
         </div>
 
       </div>
+      <comment></comment>
       <slot />
     </template>
   </MenuLayout>
