@@ -1,5 +1,5 @@
 <template>
-  <div class="coin-scene" @click="flipCoin">
+  <div class="coin-scene" >
     <div class="coin-wrapper">
       <div class="coin" ref="coin">
         <div class="front">正</div>
@@ -7,7 +7,16 @@
       </div>
       <div class="shadow" ref="shadow"></div>
     </div>
-    <p v-if="result">结果: {{ result }}</p>
+    <div flex flex-col gap-1 justify-center items-center>
+      <button role="button" @click="flipCoin" :disabled="!hasEnd">开始</button>
+      <p >结果: <span ref="resultRef">{{ result }}</span></p>
+      <div flex items-center gap-2>
+        <p>累计</p>
+        <p>正面: {{ frontCount }}</p>
+        <p>反面: {{ backCount }}</p>
+        <button @click="frontCount = 0;backCount = 0">重置</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -17,12 +26,22 @@ import gsap from "gsap";
 
 const coin = ref<HTMLElement | null>(null);
 const shadow = ref<HTMLElement | null>(null);
+const resultRef = ref<HTMLElement | null>(null);
 const result = ref("");
+const frontCount = ref(0);
+const backCount = ref(0);
+const hasEnd = ref(true);
 
 const flipCoin = () => {
-  if (!coin.value || !shadow.value) return;
+  if (!coin.value || !shadow.value || !hasEnd.value) return;
+  hasEnd.value = false;
 
   const isHeads = Math.random() > 0.5;
+  gsap.to(resultRef.value, {
+    opacity: 0,
+    duration: 0.2,
+    ease: "power2.out"
+  })
   result.value = isHeads ? "正面" : "反面";
 
   const spins = Math.floor(Math.random() * 3) + 3; // 随机3~5圈
@@ -68,8 +87,22 @@ const flipCoin = () => {
     scale: 1,
     opacity: 0.4,
     duration: 0.8,
-    ease: "bounce.out"
+    ease: "bounce.out",
   }, 0.6);
+
+  tl.eventCallback('onComplete', () => {
+    if(isHeads) {
+      frontCount.value ++
+    } else {
+      backCount.value ++
+    }
+    hasEnd.value = true;
+    gsap.to(resultRef.value, {
+      opacity: 1,
+      duration: 1,
+      ease: "power2.out"
+    });
+  })
 };
 </script>
 
@@ -80,13 +113,13 @@ const flipCoin = () => {
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
-  cursor: pointer;
 }
 
 .coin-wrapper {
   position: relative;
   width: 120px;
   height: 120px;
+  margin-bottom: 1rem;
 }
 
 .coin {
@@ -95,6 +128,8 @@ const flipCoin = () => {
   position: absolute;
   transform-style: preserve-3d;
   z-index: 2;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .front,
@@ -102,7 +137,6 @@ const flipCoin = () => {
   position: absolute;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   backface-visibility: hidden;
   display: flex;
   align-items: center;
