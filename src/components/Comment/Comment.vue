@@ -14,6 +14,8 @@ const {
   cancelReply
 } = useComment(123);
 
+const isAuthenticated = ref<boolean>(false);
+
 // 初始化示例数据
 const initData = () => {
   const stored = localStorage.getItem('vue3-comments');
@@ -82,11 +84,14 @@ onMounted(() => {
       </h2>
 
       <!-- 发表评论表单 -->
-      <div class="comment-form">
+      <div class="comment-form" v-if="isAuthenticated">
         <div class="form-group">
           <textarea v-model="newComment.content" class="form-textarea" placeholder="写下您的评论..."></textarea>
         </div>
         <button @click="addComment" class="btn btn-primary">发表评论</button>
+      </div>
+      <div v-else class="login-prompt">
+        <p>请<a href="/login">登录</a>后发表评论</p>
       </div>
 
       <!-- 评论列表 -->
@@ -96,32 +101,30 @@ onMounted(() => {
           <p>暂无评论，快来发表第一条评论吧！</p>
         </div>
 
-        <div v-for="comment in comments" :key="comment.id" class="comment-item">
+        <div v-for="comment in comments" :key="comment._id" class="comment-item">
           <div class="comment-header">
-            <div class="avatar">{{ comment.author.charAt(0).toUpperCase() }}</div>
-            <div class="comment-author">{{ comment.author }}</div>
-            <div class="comment-time">{{ formatTime(comment.timestamp) }}</div>
+            <div class="avatar"><n-avatar round :src="comment.author.avatar || '/default-avatar.png'"></n-avatar></div>
+            <div class="comment-author">{{ comment.author.username }}</div>
+            <div class="comment-time">{{ formatTime(comment.createdAt) }}</div>
           </div>
 
           <div class="comment-content">{{ comment.content }}</div>
 
           <div class="comment-actions">
-            <button @click="toggleLike(comment)" class="action-btn">
-              <i :class="comment.liked ? 'fas fa-thumbs-up' : 'far fa-thumbs-up'"></i>
-              {{ comment.likes }} 赞
-            </button>
-            <button @click="toggleReply(comment)" class="action-btn">
-              <i class="far fa-comment"></i>
-              回复
-            </button>
+<!--            <button @click="toggleLike(comment)" class="action-btn">-->
+<!--              {{ comment.likes }} 赞-->
+<!--            </button>-->
+            <button @click="vote(comment._id, 'upVote')">👍 {{ comment.upvotes.length }}</button>
+            <button @click="vote(comment._id, 'dowVote')">👎 {{ comment.downvotes.length }}</button>
+            <button @click="toggleReply(comment)" class="action-btn">回复</button>
           </div>
 
           <!-- 回复表单 -->
-          <div v-if="comment.replying" class="comment-form" style="margin-top: 15px;">
+          <div v-if="comment.replying && replyingTo === comment._id" class="comment-form" style="margin-top: 15px;">
             <div class="form-group">
               <textarea v-model="newReply.content" class="form-textarea" placeholder="写下您的回复..."></textarea>
             </div>
-            <button @click="addReply(comment)" class="btn btn-primary btn-sm">回复</button>
+            <button @click="addReply(comment._id)" class="btn btn-primary btn-sm">回复</button>
             <button @click="cancelReply" class="btn btn-sm" style="margin-left: 10px;">取消</button>
           </div>
 
@@ -129,12 +132,15 @@ onMounted(() => {
           <div v-if="comment.replies && comment.replies.length > 0" class="replies">
             <div v-for="reply in comment.replies" :key="reply.id" class="comment-item">
               <div class="comment-header">
-                <div class="avatar">{{ reply.author.charAt(0).toUpperCase() }}</div>
-                <div class="comment-author">{{ reply.author }}</div>
+                <div class="avatar">
+                  <n-avatar round :src="comment.author.avatar || '/default-avatar.png'"></n-avatar>
+                </div>
+                <div class="comment-author">{{ reply.author.username }}</div>
                 <div class="comment-time">{{ formatTime(reply.timestamp) }}</div>
               </div>
               <div class="comment-content">{{ reply.content }}</div>
             </div>
+            <button @click="cancelReply" class="btn btn-sm" style="margin-left: 10px;">取消</button>
           </div>
         </div>
       </div>

@@ -114,7 +114,7 @@ const tools = computed<ToolCategory[]>(() => [
         </div>
 
       </div>
-      <comment></comment>
+<!--      <comment></comment>-->
       <slot />
     </template>
   </MenuLayout>

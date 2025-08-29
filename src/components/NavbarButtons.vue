@@ -4,9 +4,11 @@ import { useStyleStore } from '@/stores/style.store';
 
 const styleStore = useStyleStore();
 const { isDarkTheme } = toRefs(styleStore);
+
 </script>
 
 <template>
+  <div flex>
   <!-- <c-tooltip :tooltip="$t('home.nav.github')" position="bottom">
     <c-button
       circle
@@ -32,18 +34,36 @@ const { isDarkTheme } = toRefs(styleStore);
       <n-icon size="25" :component="IconBrandX" />
     </c-button>
   </c-tooltip> -->
-
-  <c-tooltip :tooltip="$t('home.nav.about')" position="bottom">
-    <c-button circle variant="text" to="/about" :aria-label="$t('home.nav.aboutLabel')">
-      <n-icon size="25" :component="IconInfoCircle" />
-    </c-button>
-  </c-tooltip>
-  <c-tooltip :tooltip="isDarkTheme ? $t('home.nav.lightMode') : $t('home.nav.darkMode')" position="bottom">
-    <c-button circle variant="text" :aria-label="$t('home.nav.mode')" @click="() => styleStore.toggleDark()">
-      <n-icon v-if="isDarkTheme" size="25" :component="IconSun" />
-      <n-icon v-else size="25" :component="IconMoon" />
-    </c-button>
-  </c-tooltip>
+    <c-tooltip :tooltip="$t('home.nav.about')" position="bottom">
+      <c-button circle variant="text" to="/about" :aria-label="$t('home.nav.aboutLabel')">
+        <n-icon size="25" :component="IconInfoCircle" />
+      </c-button>
+    </c-tooltip>
+    <c-tooltip :tooltip="isDarkTheme ? $t('home.nav.lightMode') : $t('home.nav.darkMode')" position="bottom">
+      <c-button circle variant="text" :aria-label="$t('home.nav.mode')" @click="() => styleStore.toggleDark()">
+        <n-icon v-if="isDarkTheme" size="25" :component="IconSun" />
+        <n-icon v-else size="25" :component="IconMoon" />
+      </c-button>
+    </c-tooltip>
+    <n-popover placement="bottom" trigger="hover">
+      <template #trigger>
+        <n-badge value="0">
+          <n-avatar round>App</n-avatar>
+        </n-badge>
+      </template>
+      <div>
+        <div flex flex-col items-center justify-center>
+          <n-avatar round>App</n-avatar>
+          <span>App</span>
+        </div>
+        <ul>
+          <li>更改主题</li>
+          <li>语言</li>
+          <li>退出</li>
+        </ul>
+      </div>
+    </n-popover>
+  </div>
 </template>
 
 <style lang="less" scoped>
@@ -51,5 +71,10 @@ const { isDarkTheme } = toRefs(styleStore);
   &:not(:last-child) {
     margin-right: 5px;
   }
+}
+ul,li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 </style>
