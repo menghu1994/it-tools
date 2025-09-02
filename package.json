@@ -14,7 +14,7 @@
     "developer-tools"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vue-tsc --noEmit && NODE_OPTIONS=--max_old_space_size=4096 vite build",
     "preview": "vite preview --port 5050",
     "test": "npm run test:unit",
@@ -53,7 +53,6 @@
     "crypto-js": "^4.1.1",
     "date-fns": "^2.29.3",
     "dompurify": "^3.0.6",
-    "email-normalizer": "^1.0.0",
     "emojilib": "^3.0.10",
     "figue": "^1.2.0",
     "fuse.js": "^6.6.2",

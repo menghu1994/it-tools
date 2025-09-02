@@ -1,20 +1,19 @@
 import { tool as base64FileConverter } from './base64-file-converter';
 import { tool as base64StringConverter } from './base64-string-converter';
 import { tool as basicAuthGenerator } from './basic-auth-generator';
-import { tool as emailNormalizer } from './email-normalizer';
 
 import { tool as textToUnicode } from './text-to-unicode';
-import { tool as safelinkDecoder } from './safelink-decoder';
-import { tool as xmlToJson } from './xml-to-json';
-import { tool as jsonToXml } from './json-to-xml';
+// import { tool as safelinkDecoder } from './safelink-decoder';
+// import { tool as xmlToJson } from './xml-to-json';
+// import { tool as jsonToXml } from './json-to-xml';
 import { tool as regexTester } from './regex-tester';
-import { tool as regexMemo } from './regex-memo';
-import { tool as markdownToHtml } from './markdown-to-html';
+// import { tool as regexMemo } from './regex-memo';
+// import { tool as markdownToHtml } from './markdown-to-html';
 import { tool as bookmark } from './bookmark';
-import { tool as macAddressGenerator } from './mac-address-generator';
+// import { tool as macAddressGenerator } from './mac-address-generator';
 import { tool as textToBinary } from './text-to-binary';
 import { tool as ulidGenerator } from './ulid-generator';
-import { tool as stringObfuscator } from './string-obfuscator';
+// import { tool as stringObfuscator } from './string-obfuscator';
 import { tool as textDiff } from './text-diff';
 import { tool as emojiPicker } from './emoji-picker';
 import { tool as passwordStrengthAnalyser } from './password-strength-analyser';
@@ -22,23 +21,23 @@ import { tool as yamlToToml } from './yaml-to-toml';
 import { tool as jsonToToml } from './json-to-toml';
 import { tool as tomlToYaml } from './toml-to-yaml';
 import { tool as tomlToJson } from './toml-to-json';
-import { tool as jsonToCsv } from './json-to-csv';
+// import { tool as jsonToCsv } from './json-to-csv';
 import { tool as cameraRecorder } from './camera-recorder';
 import { tool as listConverter } from './list-converter';
 import { tool as jsonDiff } from './json-diff';
-import { tool as ipv4RangeExpander } from './ipv4-range-expander';
+// import { tool as ipv4RangeExpander } from './ipv4-range-expander';
 import { tool as httpStatusCodes } from './http-status-codes';
 import { tool as yamlToJson } from './yaml-to-json-converter';
 import { tool as jsonToYaml } from './json-to-yaml-converter';
-import { tool as ipv6UlaGenerator } from './ipv6-ula-generator';
-import { tool as ipv4AddressConverter } from './ipv4-address-converter';
-import { tool as benchmarkBuilder } from './benchmark-builder';
+// import { tool as ipv6UlaGenerator } from './ipv6-ula-generator';
+// import { tool as ipv4AddressConverter } from './ipv4-address-converter';
+// import { tool as benchmarkBuilder } from './benchmark-builder';
 import { tool as userAgentParser } from './user-agent-parser';
-import { tool as ipv4SubnetCalculator } from './ipv4-subnet-calculator';
+// import { tool as ipv4SubnetCalculator } from './ipv4-subnet-calculator';
 import { tool as dockerRunToDockerComposeConverter } from './docker-run-to-docker-compose-converter';
 import { tool as htmlWysiwygEditor } from './html-wysiwyg-editor';
 import { tool as rsaKeyPairGenerator } from './rsa-key-pair-generator';
-import { tool as slugifyString } from './slugify-string';
+// import { tool as slugifyString } from './slugify-string';
 import { tool as keycodeInfo } from './keycode-info';
 import { tool as jsonMinify } from './json-minify';
 import { tool as bcrypt } from './bcrypt';
@@ -53,24 +52,24 @@ import { tool as tableGenerator } from './table-generator';
 import { tool as dateTimeConverter } from './date-time-converter';
 import { tool as deviceInformation } from './device-information';
 import { tool as cypher } from './encryption';
-import { tool as etaCalculator } from './eta-calculator';
-import { tool as percentageCalculator } from './percentage-calculator';
-import { tool as gitMemo } from './git-memo';
+// import { tool as etaCalculator } from './eta-calculator';
+// import { tool as percentageCalculator } from './percentage-calculator';
+// import { tool as gitMemo } from './git-memo';
 import { tool as hashText } from './hash-text';
 import { tool as hmacGenerator } from './hmac-generator';
 import { tool as htmlEntities } from './html-entities';
 import { tool as baseConverter } from './integer-base-converter';
 import { tool as jsonViewer } from './json-viewer';
 import { tool as jwtParser } from './jwt-parser';
-import { tool as mathEvaluator } from './math-evaluator';
+// import { tool as mathEvaluator } from './math-evaluator';
 import { tool as metaTagGenerator } from './meta-tag-generator';
 import { tool as mimeTypes } from './mime-types';
 import { tool as otpCodeGeneratorAndValidator } from './otp-code-generator-and-validator';
 import { tool as qrCodeGenerator } from './qr-code-generator';
 import { tool as wifiQrCodeGenerator } from './wifi-qr-code-generator';
-import { tool as randomPortGenerator } from './random-port-generator';
+// import { tool as randomPortGenerator } from './random-port-generator';
 import { tool as sqlPrettify } from './sql-prettify';
-import { tool as svgPlaceholderGenerator } from './svg-placeholder-generator';
+// import { tool as svgPlaceholderGenerator } from './svg-placeholder-generator';
 import { tool as temperatureConverter } from './temperature-converter';
 import { tool as textStatistics } from './text-statistics';
 import { tool as tokenGenerator } from './token-generator';
@@ -78,16 +77,29 @@ import type { ToolCategory } from './tools.types';
 import { tool as urlEncoder } from './url-encoder';
 import { tool as urlParser } from './url-parser';
 import { tool as uuidGenerator } from './uuid-generator';
-import { tool as macAddressLookup } from './mac-address-lookup';
+// import { tool as macAddressLookup } from './mac-address-lookup';
 import { tool as xmlFormatter } from './xml-formatter';
 import { tool as yamlViewer } from './yaml-viewer';
 import { tool as scheduleClass } from './schedule-class';
 import { tool as coinToss } from './coin-toss';
+import { tool as wheelRotate } from './wheel-rotate';
+import { tool as marquee } from './marquee';
 
 export const toolsByCategory: ToolCategory[] = [
   {
     name: 'Crypto',
-    components: [tokenGenerator, hashText, bcrypt, uuidGenerator, ulidGenerator, cypher, bip39, hmacGenerator, rsaKeyPairGenerator, passwordStrengthAnalyser],
+    components: [
+      tokenGenerator,
+      hashText,
+      bcrypt,
+      uuidGenerator,
+      ulidGenerator,
+      cypher,
+      bip39,
+      hmacGenerator,
+      rsaKeyPairGenerator,
+      passwordStrengthAnalyser
+    ],
   },
   {
     name: 'Converter',
@@ -101,15 +113,15 @@ export const toolsByCategory: ToolCategory[] = [
       textToBinary,
       textToUnicode,
       yamlToJson,
-      yamlToToml,
+      // yamlToToml,
       jsonToYaml,
       jsonToToml,
       listConverter,
       tomlToJson,
       tomlToYaml,
-      xmlToJson,
-      jsonToXml,
-      markdownToHtml,
+      // xmlToJson,
+      // jsonToXml,
+      // markdownToHtml,
       bookmark
     ],
   },
@@ -126,65 +138,94 @@ export const toolsByCategory: ToolCategory[] = [
       mimeTypes,
       jwtParser,
       keycodeInfo,
-      slugifyString,
+      // slugifyString,
       htmlWysiwygEditor,
       userAgentParser,
       httpStatusCodes,
-      jsonDiff,
-      safelinkDecoder,
+      // safelinkDecoder,
     ],
   },
   {
     name: 'Images and videos',
-    components: [qrCodeGenerator, wifiQrCodeGenerator, svgPlaceholderGenerator, cameraRecorder],
+    components: [
+      qrCodeGenerator,
+      wifiQrCodeGenerator,
+      // svgPlaceholderGenerator,
+      cameraRecorder
+    ],
   },
   {
     name: 'Development',
     components: [
-      gitMemo,
-      randomPortGenerator,
-      jsonViewer,
+      // gitMemo,
+      // randomPortGenerator,
       jsonMinify,
-      jsonToCsv,
       sqlPrettify,
+      // jsonToCsv,
       chmodCalculator,
       dockerRunToDockerComposeConverter,
+      jsonViewer,
       xmlFormatter,
+      jsonDiff,
       yamlViewer,
-      emailNormalizer,
       regexTester,
-      regexMemo,
+      // regexMemo,
     ],
   },
   {
     name: 'CSS',
     components: [
-      colorSpace, colorGradient, tableGenerator,coinToss
+      colorSpace,
+      colorGradient,
+      tableGenerator
     ]
   },
-  {
-    name: 'Network',
-    components: [ipv4SubnetCalculator, ipv4AddressConverter, ipv4RangeExpander, macAddressLookup, macAddressGenerator, ipv6UlaGenerator],
-  },
-  {
-    name: 'Math',
-    components: [mathEvaluator, etaCalculator, percentageCalculator],
-  },
+  // {
+  //   name: 'Network',
+  //   components: [ipv4SubnetCalculator, ipv4AddressConverter, ipv4RangeExpander, macAddressLookup, macAddressGenerator, ipv6UlaGenerator],
+  // },
+  // {
+  //   name: 'Math',
+  //   components: [
+  //     // 数学计算器
+  //     mathEvaluator,
+  //     // ETA 计算器
+  //     etaCalculator,
+  //     // 百分比计算器
+  //     percentageCalculator
+  //   ],
+  // },
   {
     name: 'Measurement',
-    components: [chronometer, temperatureConverter, benchmarkBuilder],
+    components: [
+      chronometer,
+      temperatureConverter,
+      // 基准生成器
+      // benchmarkBuilder
+    ],
   },
   {
-    name: 'teach',
-    components: [scheduleClass],
+    name: 'Teach',
+    components: [
+      scheduleClass
+    ],
+  },
+  {
+    name: "Game",
+    components: [
+      coinToss,
+      wheelRotate
+    ]
   },
   {
     name: 'Text',
     components: [
       textStatistics,
       emojiPicker,
-      stringObfuscator,
-      textDiff
+      // 字符串混淆器
+      // stringObfuscator,
+      textDiff,
+      marquee
     ],
   }
 ];

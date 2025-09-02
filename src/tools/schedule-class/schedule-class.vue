@@ -1,17 +1,23 @@
 <script setup>
 import { ref } from 'vue';
 import draggable from 'vuedraggable';
+import { Plus } from '@vicons/tabler';
 
 const teachers = ref([
   { uid: 10, teacher: '王老师', name: '数学' },
   { uid: 1, teacher: '赵老师', name: '体育' },
   { uid: 2, teacher: '司马老师', name: '音乐' },
-  { uid: 3, teacher: 'A老师', name: '音乐B' },
 ]);
 
 const userInfo = ref({ id: 10 });
-const weekDays = ref(['周一', '周二', '周三', '周四', '周五', '周六', '周日']);
+let weekDays = ref(['周一', '周二', '周三', '周四', '周五', '周六', '周日']);
 const timePeriodDefine = ref(['上午', '下午', '课后服务']);
+const showTeacherName = ref(true);
+const showWeekend = ref(true);
+
+watch(showWeekend, (val) => {
+  weekDays.value = val ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] : ['周一', '周二', '周三', '周四', '周五'];
+})
 
 const timePeriods = ref([
   [
@@ -253,22 +259,34 @@ document.addEventListener('click', () => {
 
 <template>
   <div class="w-full">
-    <!-- <div class="flex flex-row-reverse gap-2 mb-2">
-      <button @click="exportTableToImage()">导出为图片</button>
-      <button @click="exportTableToExcel()">导出为Excel</button>
-      <button @click="printDOM('table-wrapper')">打印</button>
-    </div> -->
+    <div class="flex flex-row-reverse gap-2 mb-2">
+<!--      <button @click="exportTableToImage()">导出为图片</button>-->
+<!--      <button @click="exportTableToExcel()">导出为Excel</button>-->
+<!--      <button @click="printDOM('table-wrapper')">打印</button>-->
+      <n-switch v-model:value="showWeekend" :round="false" >
+        <template #checked> 显示周末 </template>
+        <template #unchecked>隐藏周末</template>
+      </n-switch>
+      <n-switch v-model:value="showTeacherName" :round="false" >
+        <template #checked> 显示教师名称 </template>
+        <template #unchecked>隐藏教师名称</template>
+      </n-switch>
+    </div>
     <div class="flex h-full gap-2">
       <div class="flex flex-col gap-1 w-24">
         <draggable :list="teachers" :group="{ name: 'courses', pull: 'clone', put: false }" item-key="uid"
           :sort="false">
           <template #item="{ element }">
-            <div class="teacher-item border-2 mb-3 p-2 bg-white rounded shadow hover:bg-gray-100">
-              {{ element.name }}<br>
-              <span class="text-xs">{{ element.teacher }}</span>
+            <div class="teacher-item border-2 mb-3 p-2 bg-white rounded hover:bg-gray-100 text-center">
+              <span class="font-bold">{{ element.name }}</span><br>
+              <span class="text-xs" v-if="showTeacherName">{{ element.teacher }}</span>
             </div>
           </template>
         </draggable>
+        <c-button @click="addValue">
+          <n-icon :component="Plus" depth="3" mr-2 size="18" />
+          添加
+        </c-button>
       </div>
 
       <div id="table-wrapper" class="w-full h-full">
@@ -292,7 +310,7 @@ document.addEventListener('click', () => {
                     <div v-if="getCourse(day, session.id)" class="h-full flex flex-col justify-center" draggable="true"
                       @dragstart="(e) => onDragStart(e, day, session.id)">
                       {{ getCourse(day, session.id).name }}
-                      <span v-if="getCourse(day, session.id).teacher" class="teacher">
+                      <span v-if="showTeacherName && getCourse(day, session.id).teacher" class="teacher">
                         {{ getCourse(day, session.id).teacher }}
                       </span>
                     </div>

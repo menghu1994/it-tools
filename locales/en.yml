@@ -27,6 +27,20 @@ home:
     darkMode: 'Dark mode'
     lightMode: 'Light mode'
     mode: 'Toggle dark/light mode'
+global:
+  search: 'Search'
+  textContent: 'Your text ...'
+date:
+  milliseconds: milliseconds
+  seconds: seconds
+  minutes: minutes
+  hours: hours
+  days: days
+entity:
+  action:
+    copy: 'Copy'
+    copyToClipboard: 'Copy To Clipboard'
+    copied: 'Copied'
 about:
   content: >
     # About IT-Tools
@@ -62,6 +76,7 @@ tools:
     network: Network
     math: Math
     measurement: Measurement
+    teach: Teach
     text: Text
     data: Data
 
@@ -95,6 +110,10 @@ tools:
     title: SVG placeholder generator
     description: Generate svg images to use as a placeholder in your applications.
 
+  regexTester:
+    title: Regex Tester
+    description: 'Test your regular expressions with sample text.'
+
   json-to-csv:
     title: JSON to CSV
     description: Convert JSON to CSV with automatic header detection.
@@ -114,6 +133,30 @@ tools:
   color-converter:
     title: Color converter
     description: Convert color between the different formats (hex, rgb, hsl and css name)
+
+  color-space:
+    title: Theme color
+    description: Theme color
+
+  color-gradient:
+    title: gradient Color
+    description: gradient background color
+
+  table-generator:
+    title: Table Generator
+    description: Custom Table
+
+  coin-toss:
+    title: Coin Toss
+    description: Toss your lock
+
+  wheel-rotate:
+    title: Wheel Rotate
+    description: Wheel Rotate Game
+
+  marquee:
+    title: 手持弹幕
+    description: 应援必备
 
   bcrypt:
     title: Bcrypt
@@ -158,6 +201,8 @@ tools:
   eta-calculator:
     title: ETA calculator
     description: An ETA (Estimated Time of Arrival) calculator to determine the approximate end time of a task, for example, the end time and duration of a file download.
+    example: With a concrete example, if you wash 5 plates in 3 minutes and you have 500 plates to wash, it will take you 5
+      hours to wash them all.
 
   roman-numeral-converter:
     title: Roman numeral converter
@@ -354,6 +399,10 @@ tools:
   text-statistics:
     title: Text statistics
     description: Get information about a text, the number of characters, the number of words, its size in bytes, ...
+    characterCount: Character count
+    wordCount: Word count
+    lineCount: Line count
+    byteSize: Byte size
 
   text-to-nato-alphabet:
     title: Text to NATO alphabet
@@ -386,3 +435,13 @@ tools:
   text-to-binary:
     title: Text to ASCII binary
     description: Convert text to its ASCII binary representation and vice-versa.
+
+  temperature:
+    Kelvin: Kelvin
+    Celsius: Celsius
+    Fahrenheit: Fahrenheit
+    Rankine: Rankine
+    Delisle: Delisle
+    Newton: Newton
+    Réaumur: Réaumur
+    Rømer: Rømer

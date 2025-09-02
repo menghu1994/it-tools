@@ -1,9 +1,7 @@
 <script setup lang="ts">
-// Duplicate issue with sub directory
-
 import { addMilliseconds, formatRelative } from 'date-fns';
 
-import { enGB } from 'date-fns/locale';
+import { zhCN } from 'date-fns/locale';
 
 import { formatMsDuration } from './eta-calculator.service';
 
@@ -19,15 +17,14 @@ const durationMs = computed(() => {
   return unitCount.value / (unitPerTimeSpan.value / timeSpanMs);
 });
 const endAt = computed(() =>
-  formatRelative(addMilliseconds(startedAt.value, durationMs.value), Date.now(), { locale: enGB }),
+  formatRelative(addMilliseconds(startedAt.value, durationMs.value), Date.now(), { locale: zhCN }),
 );
 </script>
 
 <template>
   <div>
     <div text-justify op-70>
-      With a concrete example, if you wash 5 plates in 3 minutes and you have 500 plates to wash, it will take you 5
-      hours to wash them all.
+      {{ $t('tools.eta-calculator.example') }}
     </div>
     <n-divider />
     <div flex gap-2>
@@ -49,11 +46,10 @@ const endAt = computed(() =>
           v-model:value="timeSpanUnitMultiplier"
           min-w-130px
           :options="[
-            { label: 'milliseconds', value: 1 },
-            { label: 'seconds', value: 1000 },
-            { label: 'minutes', value: 1000 * 60 },
-            { label: 'hours', value: 1000 * 60 * 60 },
-            { label: 'days', value: 1000 * 60 * 60 * 24 },
+            { label: $t('date.seconds'), value: 1000 },
+            { label: $t('date.minutes'), value: 1000 * 60 },
+            { label: $t('date.hours'), value: 1000 * 60 * 60 },
+            { label: $t('date.days'), value: 1000 * 60 * 60 * 24 },
           ]"
         />
       </div>

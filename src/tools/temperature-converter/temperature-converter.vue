@@ -26,56 +26,56 @@ const units = reactive<
   >
       >({
         kelvin: {
-          title: 'Kelvin',
+          title: 'tools.temperature.Kelvin',
           unit: 'K',
           ref: 0,
           toKelvin: _.identity,
           fromKelvin: _.identity,
         },
         celsius: {
-          title: 'Celsius',
+          title: 'tools.temperature.Celsius',
           unit: '°C',
           ref: 0,
           toKelvin: convertCelsiusToKelvin,
           fromKelvin: convertKelvinToCelsius,
         },
         fahrenheit: {
-          title: 'Fahrenheit',
+          title: 'tools.temperature.Fahrenheit',
           unit: '°F',
           ref: 0,
           toKelvin: convertFahrenheitToKelvin,
           fromKelvin: convertKelvinToFahrenheit,
         },
         rankine: {
-          title: 'Rankine',
+          title: 'tools.temperature.Rankine',
           unit: '°R',
           ref: 0,
           toKelvin: convertRankineToKelvin,
           fromKelvin: convertKelvinToRankine,
         },
         delisle: {
-          title: 'Delisle',
+          title: 'tools.temperature.Delisle',
           unit: '°De',
           ref: 0,
           toKelvin: convertDelisleToKelvin,
           fromKelvin: convertKelvinToDelisle,
         },
         newton: {
-          title: 'Newton',
+          title: 'tools.temperature.Newton',
           unit: '°N',
           ref: 0,
           toKelvin: convertNewtonToKelvin,
           fromKelvin: convertKelvinToNewton,
         },
         reaumur: {
-          title: 'Réaumur',
+          title: 'tools.temperature.Réaumur',
           unit: '°Ré',
           ref: 0,
           toKelvin: convertReaumurToKelvin,
           fromKelvin: convertKelvinToReaumur,
         },
         romer: {
-          title: 'Rømer',
+          title: 'tools.temperature.Rømer',
           unit: '°Rø',
           ref: 0,
           toKelvin: convertRomerToKelvin,
@@ -103,7 +103,7 @@ update('kelvin');
   <div>
     <n-input-group v-for="[key, { title, unit }] in Object.entries(units)" :key="key" mb-3 w-full>
       <n-input-group-label style="width: 100px">
-        {{ title }}
+        {{ $t(title) }}
       </n-input-group-label>
 
       <n-input-number

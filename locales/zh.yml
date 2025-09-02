@@ -24,6 +24,13 @@ home:
     mode: '颜色模式'
 global:
   search: '搜索'
+  textContent: '文本内容...'
+date:
+  milliseconds: 毫秒
+  seconds: 秒
+  minutes: 分钟
+  hours: 小时
+  days: 天
 entity:
   action:
     copy: '复制'
@@ -62,6 +69,7 @@ tools:
     network: '网络'
     math: '数学'
     measurement: '测量'
+    teach: '教学'
     text: '文本'
     data: '数据'
 
@@ -93,6 +101,10 @@ tools:
   svg-placeholder-generator:
     title: SVG 占位符生成器
     description: 生成 svg 图像以用作应用程序中的占位符。
+
+  regexTester:
+    title: 正则表达式测试器
+    description: 使用示例文本测试您的正则表达式。
 
   json-to-csv:
     title: JSON 转 CSV
@@ -126,6 +138,18 @@ tools:
     title: 表格生成器
     description: 自定义表格
 
+  coin-toss:
+    title: 抛硬币
+    description: 来看看你的运气
+
+  wheel-rotate:
+    title: 大转盘
+    description: 随机大挑战
+
+  marquee:
+    title: 手持弹幕
+    description: 应援必备
+
   bcrypt:
     title: 加密
     description: 使用bcrypt对文本字符串进行哈希和比较。Bcrypt是一个基于Blowfish密码的密码哈希函数。
@@ -139,8 +163,8 @@ tools:
     description: 所有HTTP状态的列表对其名称和含义解释。
 
   sql-prettify:
-    title: SQL 美化和格式化
-    description: 在线格式化和美化您的 SQL 查询（它支持各种 SQL 方言）。
+    title: SQL 格式化
+    description: 在线格式化您的 SQL 查询（它支持各种 SQL 方言）。
 
   benchmark-builder:
     title: 基准生成器
@@ -163,12 +187,13 @@ tools:
     description: 生成“已知”端口范围（0-1023）之外的随机端口号。
 
   yaml-prettify:
-    title: YAML美化和格式化
+    title: YAML格式化
     description: 将YAML字符串修饰为友好的可读格式。
 
   eta-calculator:
     title: ETA 计算器
     description: ETA（估计到达时间）计算器，用于知道任务的近似结束时间，例如下载的结束时刻。
+    example: 举个具体的例子，如果你在 3 分钟内洗 5 个盘子，而你有 500 个盘子要洗，那么你需要 5 个小时才能洗完所有盘子。
 
   roman-numeral-converter:
     title: 罗马数字转换器
@@ -239,7 +264,7 @@ tools:
     description: 转义或unescape html实体（将<、>、&、“和\'替换为其html版本）
 
   json-prettify:
-    title: JSON美化和格式化
+    title: JSON格式化
     description: 将JSON字符串修饰为友好的可读格式。
 
   docker-run-to-docker-compose-converter:
@@ -372,6 +397,10 @@ tools:
   text-statistics:
     title: 文本统计
     description: 获取有关文本、字符数、字数、大小等的信息
+    characterCount: 字符数量
+    wordCount: 词汇数量
+    lineCount: 段落数量
+    byteSize: 字节大小
 
   text-to-nato-alphabet:
     title: 文本转北约字母表
@@ -404,3 +433,13 @@ tools:
   text-to-binary:
     title: 文本到 ASCII 二进制
     description: 将文本转换为其 ASCII 二进制表示形式，反之亦然。
+
+  temperature:
+    Kelvin: 开尔文
+    Celsius: 摄氏度
+    Fahrenheit: 华氏度
+    Rankine: 兰金
+    Delisle: 德莱尔
+    Newton: 牛顿
+    Réaumur: 雷奥穆尔
+    Rømer: 罗默

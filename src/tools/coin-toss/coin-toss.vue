@@ -128,8 +128,6 @@ const flipCoin = () => {
   position: absolute;
   transform-style: preserve-3d;
   z-index: 2;
-  border-radius: 50%;
-  overflow: hidden;
 }
 
 .front,
@@ -144,6 +142,8 @@ const flipCoin = () => {
   font-size: 28px;
   font-weight: bold;
   color: white;
+  border-radius: 50%;
+  overflow: auto;
 }
 
 .front {
