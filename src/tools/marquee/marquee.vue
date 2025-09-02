@@ -49,7 +49,7 @@ const handleTap = () => {
   const now = Date.now()
   if (now - lastTap.value < 300) {
     resetPlaying()
-  } else {
+  } else if(isPlaying.value) {
     message.info('双击可退出弹幕',{
       showIcon: false
     })
@@ -71,7 +71,7 @@ onBeforeUnmount(() =>  window.removeEventListener('click', handleTap))
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999;
+  z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;

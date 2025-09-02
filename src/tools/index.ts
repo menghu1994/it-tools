@@ -68,7 +68,7 @@ import { tool as otpCodeGeneratorAndValidator } from './otp-code-generator-and-v
 import { tool as qrCodeGenerator } from './qr-code-generator';
 import { tool as wifiQrCodeGenerator } from './wifi-qr-code-generator';
 // import { tool as randomPortGenerator } from './random-port-generator';
-import { tool as sqlPrettify } from './sql-prettify';
+// import { tool as sqlPrettify } from './sql-prettify';
 // import { tool as svgPlaceholderGenerator } from './svg-placeholder-generator';
 import { tool as temperatureConverter } from './temperature-converter';
 import { tool as textStatistics } from './text-statistics';
@@ -84,6 +84,7 @@ import { tool as scheduleClass } from './schedule-class';
 import { tool as coinToss } from './coin-toss';
 import { tool as wheelRotate } from './wheel-rotate';
 import { tool as marquee } from './marquee';
+import { tool as eatToday } from './eat-today';
 
 export const toolsByCategory: ToolCategory[] = [
   {
@@ -160,7 +161,7 @@ export const toolsByCategory: ToolCategory[] = [
       // gitMemo,
       // randomPortGenerator,
       jsonMinify,
-      sqlPrettify,
+      // sqlPrettify,
       // jsonToCsv,
       chmodCalculator,
       dockerRunToDockerComposeConverter,
@@ -214,7 +215,8 @@ export const toolsByCategory: ToolCategory[] = [
     name: "Game",
     components: [
       coinToss,
-      wheelRotate
+      wheelRotate,
+      eatToday
     ]
   },
   {
