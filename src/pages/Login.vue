@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import loginBg from './loginBg.vue'
+import AuthService from '@/api/auth/auth.service';
+import { useUserStore } from '@/stores/user.store';
 
+const service = new AuthService();
 const router = useRouter();
+const userStore = useUserStore();
 
+const login = () => {
+  service.login({ username: 'test', password: 'test', withoutCaptcha: true }).then((res) => {
+    userStore.setUser(res.data);
+    router.push('/');
+  });
+}
+
+const regist = () => {}
 </script>
 
 <template>
@@ -19,7 +30,7 @@ const router = useRouter();
             <form class="form">
               <input type="text" placeholder="Username">
               <input type="password" placeholder="Password">
-              <button type="submit">Login</button>
+              <button type="button" @click="login()">Login</button>
             </form>
           </div>
           <div class="sign-up-htm">
@@ -28,13 +39,12 @@ const router = useRouter();
               <input type="password" placeholder="Password">
               <input type="password" placeholder="Repeat Password">
               <input type="text" placeholder="Email Address">
-              <button type="submit">Sign Up</button>
+              <button type="submit"  @click="regist()">Sign Up</button>
             </form>
           </div>
         </div>
       </div>
     </div>
-    <login-bg></login-bg>
   </div>
 </template>
 
@@ -52,12 +62,17 @@ a {
 }
 
 .wrapper {
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   background: #50a3a2;
-  background: -webkit-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  background: -moz-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  background: -o-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  background: linear-gradient(to bottom right, #50a3a2 0%, #53e3a6 100%);
+  //background: -webkit-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
+  //background: -moz-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
+  //background: -o-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
+  //background: linear-gradient(to bottom right, #50a3a2 0%, #53e3a6 100%);
+  //background-image: conic-gradient(#f0d9b5 25%, #b58863 0% 50%, #f0d9b5 50% 75%, #b58863 75%);
+  //background-image: conic-gradient(#50a3a2 25%, #53e3a6 0% 50%, #50a3a2 50% 75%, #53e3a6 75%);
+  //background-size: 300px 300px;
 }
 
 
@@ -120,6 +135,7 @@ form{
 
 .login-wrap {
   width: 100%;
+  height: 100%;
   margin: 0 auto;
   max-width: 525px;
   min-height: 670px;

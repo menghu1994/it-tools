@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import { IconBrandGithub, IconBrandX, IconInfoCircle, IconMoon, IconSun } from '@tabler/icons-vue';
 import { useStyleStore } from '@/stores/style.store';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user.store';
+
+const router = useRouter();
+const userStore = useUserStore();
 
 const styleStore = useStyleStore();
 const { isDarkTheme } = toRefs(styleStore);
 
+const userInfo = userStore.user;
+
+const logout = () => {
+  userStore.clearUser()
+  // TODO logout service to clear cookie
+  router.push('/login');
+}
 </script>
 
 <template>
-  <div flex>
+  <div flex items-center>
   <!-- <c-tooltip :tooltip="$t('home.nav.github')" position="bottom">
     <c-button
       circle
@@ -45,24 +57,27 @@ const { isDarkTheme } = toRefs(styleStore);
         <n-icon v-else size="25" :component="IconMoon" />
       </c-button>
     </c-tooltip>
-    <n-popover placement="bottom" trigger="hover">
-      <template #trigger>
+    <n-popover placement="bottom" trigger="hover" v-if="userInfo">
+      <template #trigger >
         <n-badge value="0">
-          <n-avatar round>App</n-avatar>
+          <n-avatar round>{{userInfo?.username}}</n-avatar>
         </n-badge>
       </template>
       <div>
         <div flex flex-col items-center justify-center>
-          <n-avatar round>App</n-avatar>
-          <span>App</span>
+          <n-avatar round>{{userInfo?.username}}</n-avatar>
+          <span>{{userInfo?.username}}</span>
         </div>
         <ul>
           <li>更改主题</li>
           <li>语言</li>
-          <li>退出</li>
+          <li @click="logout()">退出</li>
         </ul>
       </div>
     </n-popover>
+    <div v-else>
+      <router-link to="/login">登录</router-link>
+    </div>
   </div>
 </template>
 
