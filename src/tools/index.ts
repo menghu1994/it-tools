@@ -85,6 +85,11 @@ import { tool as coinToss } from './coin-toss';
 import { tool as wheelRotate } from './wheel-rotate';
 import { tool as marquee } from './marquee';
 import { tool as eatToday } from './eat-today';
+import { tool as screenRecord } from './screen-record';
+import { tool as imageEditor } from './image-editor';
+import { tool as linuxCommand } from './linux-command';
+import { tool as watermark } from './watermark';
+import { tool as imagePatina } from './image-patina';
 
 export const toolsByCategory: ToolCategory[] = [
   {
@@ -152,7 +157,10 @@ export const toolsByCategory: ToolCategory[] = [
       qrCodeGenerator,
       wifiQrCodeGenerator,
       // svgPlaceholderGenerator,
-      cameraRecorder
+      cameraRecorder,
+      imageEditor,
+      watermark,
+      imagePatina
     ],
   },
   {
@@ -170,6 +178,7 @@ export const toolsByCategory: ToolCategory[] = [
       jsonDiff,
       yamlViewer,
       regexTester,
+      linuxCommand
       // regexMemo,
     ],
   },
@@ -208,7 +217,8 @@ export const toolsByCategory: ToolCategory[] = [
   {
     name: 'Teach',
     components: [
-      scheduleClass
+      scheduleClass,
+      screenRecord
     ],
   },
   {

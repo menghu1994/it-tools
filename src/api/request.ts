@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import router from '@/router';
 import { useMessage } from 'naive-ui';
 
 const message = useMessage();
@@ -56,7 +55,7 @@ axios.interceptors.response.use(
             }
           } catch (e) {
             message.error('尚未登录请重新登录');
-            router.replace({ path: '/login' });
+            return Promise.reject({ code: 401, message: '尚未登录' });
           }
         case 403:
           message.error('您没有权限这样做，请联系管理员');

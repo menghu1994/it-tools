@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import AuthService from '@/api/auth/auth.service';
+import { authService } from '@/api/auth/auth.service';
 import { useUserStore } from '@/stores/user.store';
 
-const service = new AuthService();
 const router = useRouter();
 const userStore = useUserStore();
+const { user } = toRefs(userStore);
 
 const login = () => {
-  service.login({ username: 'test', password: 'test', withoutCaptcha: true }).then((res) => {
-    userStore.setUser(res.data);
+  authService.login({ username: 'test', password: 'test', withoutCaptcha: true }).then((res) => {
+    user.value = res.data
     router.push('/');
   });
 }

@@ -3,24 +3,29 @@ import { IconBrandGithub, IconBrandX, IconInfoCircle, IconMoon, IconSun } from '
 import { useStyleStore } from '@/stores/style.store';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
+import { onMounted } from 'vue';
+import { authService } from '@/api/auth/auth.service';
 
 const router = useRouter();
 const userStore = useUserStore();
+const { user } = toRefs(userStore);
 
 const styleStore = useStyleStore();
 const { isDarkTheme } = toRefs(styleStore);
 
-const userInfo = userStore.user;
+onMounted(() => {
 
-const logout = () => {
-  userStore.clearUser()
-  // TODO logout service to clear cookie
+})
+
+const logout = async () => {
+  user.value = null;
+  await authService.logout();
   router.push('/login');
 }
 </script>
 
 <template>
-  <div flex items-center>
+  <div flex items-center gap-1>
   <!-- <c-tooltip :tooltip="$t('home.nav.github')" position="bottom">
     <c-button
       circle
@@ -57,21 +62,19 @@ const logout = () => {
         <n-icon v-else size="25" :component="IconMoon" />
       </c-button>
     </c-tooltip>
-    <n-popover placement="bottom" trigger="hover" v-if="userInfo">
+    <n-popover placement="bottom" trigger="hover" v-if="user">
       <template #trigger >
         <n-badge value="0">
-          <n-avatar round>{{userInfo?.username}}</n-avatar>
+          <n-avatar round>{{user?.username}}</n-avatar>
         </n-badge>
       </template>
       <div>
         <div flex flex-col items-center justify-center>
-          <n-avatar round>{{userInfo?.username}}</n-avatar>
-          <span>{{userInfo?.username}}</span>
+          <span>{{user?.username}}</span>
         </div>
+        <n-divider />
         <ul>
-          <li>更改主题</li>
-          <li>语言</li>
-          <li @click="logout()">退出</li>
+          <li class="cursor-pointer" @click="logout()">退出</li>
         </ul>
       </div>
     </n-popover>

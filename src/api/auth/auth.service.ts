@@ -1,22 +1,32 @@
 import request from '@/api/request';
 
-export default class AuthService {
+class AuthService {
+  basicUrl = 'auth'
   constructor() {
   }
 
   login(params: any) {
     return request({
-      url: `auth/login`,
+      url: `${this.basicUrl}/login`,
       method: 'POST',
       data: params,
     });
   }
 
-  logout() {
+  logout(): Promise<any> {
     return request({
-      url: `auth/logout`,
+      url: `${this.basicUrl}/logout`,
       method: 'POST'
     });
   }
 
+  getAccount(): Promise<any> {
+    return request({
+      url: `${this.basicUrl}/account`,
+      method: 'GET'
+    });
+  }
+
 }
+
+export const authService = new AuthService();

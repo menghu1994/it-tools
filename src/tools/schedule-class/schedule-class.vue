@@ -1,18 +1,18 @@
 <script setup>
 import { ref } from 'vue';
-import draggable from 'vuedraggable';
 import { Plus } from '@vicons/tabler';
 
-const teachers = ref([
-  { uid: 10, teacher: '王老师', name: '数学' },
-  { uid: 1, teacher: '赵老师', name: '体育' },
-  { uid: 2, teacher: '司马老师', name: '音乐' },
+const classes = ref([
+  { uid: 1, name: '语文' },
+  { uid: 2, name: '数学' },
+  { uid: 3, name: '英语' },
+  { uid: 4, name: '体育' },
+  { uid: 5, name: '音乐' },
 ]);
 
-const userInfo = ref({ id: 10 });
+const userInfo = ref({ id: 3 });
 let weekDays = ref(['周一', '周二', '周三', '周四', '周五', '周六', '周日']);
 const timePeriodDefine = ref(['上午', '下午', '课后服务']);
-const showTeacherName = ref(true);
 const showWeekend = ref(true);
 
 watch(showWeekend, (val) => {
@@ -41,11 +41,12 @@ const timePeriods = ref([
 
 const courses = ref({
   '周一': {
-    'm1': { name: '数学', teacher: '王老师', uid: 10 },
-    'a2': { name: '体育', teacher: '赵老师', uid: 1 }
+    'm1': { name: '数学', uid: 2 },
+    'm2': { name: '英语', uid: 3 },
+    'a2': { name: '体育', uid: 1 }
   },
   '周三': {
-    'm3': { name: '音乐', teacher: '司马老师', uid: 2 }
+    'm3': { name: '音乐', uid: 2 }
   }
 });
 
@@ -53,39 +54,42 @@ const showContextMenu = ref(false);
 const contextMenuPosition = ref([0, 0]);
 const currentDay = ref();
 const currentSessionId = ref();
-const dragData = ref(null);
+
+const addValue = () => {
+  classes.value = [...classes.value, { uid: classes.value.length + 1, name: '新课程' }];
+}
 
 const getCourse = (day, sessionId) => {
   return courses.value[day]?.[sessionId];
 };
 
+const onDragClassStart = (event, element) => {
+  event.dataTransfer.setData('text/application', JSON.stringify(element));
+  event.dataTransfer.setData('text/plain', JSON.stringify(element.name));
+};
+
 const onDragStart = (e, day, sessionId) => {
-  const course = getCourse(day, sessionId);
-  if (course) {
-    dragData.value = {
-      ...course,
-      sourceDay: day,
-      sourceSessionId: sessionId
-    };
-    e.dataTransfer.setData('text/plain', JSON.stringify(dragData.value));
-    e.dataTransfer.effectAllowed = 'move';
-  }
+  const dragData = {
+    ...getCourse(day, sessionId),
+    sourceDay: day,
+    sourceSessionId: sessionId
+  };
+  e.dataTransfer.setData('text/application', JSON.stringify(dragData));
+  e.dataTransfer.effectAllowed = e.ctrlKey ? 'copy' : 'move';
 };
 
 const onDrop = (e, targetDay, targetSessionId) => {
   e.preventDefault();
 
-  const textData = e.dataTransfer.getData('text/plain');
-  if (!textData) return;
-
+  const textData = e.dataTransfer.getData('text/application');
+  if (!textData) {return}
   let droppedItem;
   try {
     droppedItem = JSON.parse(textData);
   } catch {
     droppedItem = {
-      name: textData,
-      teacher: '',
-      uid: null
+      name: textData?.name,
+      uid: textData?.uid
     };
   }
 
@@ -96,7 +100,6 @@ const onDrop = (e, targetDay, targetSessionId) => {
     }
     courses.value[targetDay][targetSessionId] = {
       name: droppedItem.name,
-      teacher: droppedItem.teacher || '',
       uid: droppedItem.uid || null
     };
     return;
@@ -123,9 +126,10 @@ const onDrop = (e, targetDay, targetSessionId) => {
       courses.value[targetDay] = {};
     }
     courses.value[targetDay][targetSessionId] = sourceCourse;
-    delete courses.value[sourceDay][sourceSessionId];
+    if(e.dataTransfer.effectAllowed === 'move') {
+      delete courses.value[sourceDay][sourceSessionId];
+    }
   }
-  dragData.value = null;
 };
 const onRightClick = (event, day, sessionId) => {
   if (!getCourse(day, sessionId)) {
@@ -225,12 +229,6 @@ const printDOM = (tableId) => {
               background-color: #e6f7ff;
               box-shadow: inset 0 0 2px #82d7ff;
             }
-            .teacher {
-              display: block;
-              font-size: 12px;
-              color: #666;
-              margin-top: 4px;
-            }
           }
         </style>
       </head>
@@ -267,27 +265,27 @@ document.addEventListener('click', () => {
         <template #checked> 显示周末 </template>
         <template #unchecked>隐藏周末</template>
       </n-switch>
-      <n-switch v-model:value="showTeacherName" :round="false" >
-        <template #checked> 显示教师名称 </template>
-        <template #unchecked>隐藏教师名称</template>
-      </n-switch>
     </div>
     <div class="flex h-full gap-2">
-      <div class="flex flex-col gap-1 w-24">
-        <draggable :list="teachers" :group="{ name: 'courses', pull: 'clone', put: false }" item-key="uid"
-          :sort="false">
-          <template #item="{ element }">
-            <div class="teacher-item border-2 mb-3 p-2 bg-white rounded hover:bg-gray-100 text-center">
-              <span class="font-bold">{{ element.name }}</span><br>
-              <span class="text-xs" v-if="showTeacherName">{{ element.teacher }}</span>
-            </div>
-          </template>
-        </draggable>
-        <c-button @click="addValue">
-          <n-icon :component="Plus" depth="3" mr-2 size="18" />
-          添加
-        </c-button>
+      <div class="w-40 border p-2">
+        <h3>可选课程</h3>
+        <div class="flex flex-col gap-1">
+          <div v-for="element in classes"
+               :key="element.uid"
+               class="teacher-item border-2 p-2 bg-white rounded hover:bg-gray-100 text-center"
+               draggable="true"
+               @dragstart="onDragClassStart($event, element)">
+            <span class="font-bold">
+              {{ element.name }}
+            </span>
+          </div>
+          <c-button @click="addValue">
+            <n-icon :component="Plus" depth="3" mr-2 size="18" />
+            添加
+          </c-button>
+        </div>
       </div>
+
 
       <div id="table-wrapper" class="w-full h-full">
         <table id="course-table" class="course-table w-full h-full">
@@ -301,21 +299,19 @@ document.addEventListener('click', () => {
             <template v-for="(timePeriod, timePeriodIndex) in timePeriods" :key="timePeriodIndex">
               <template v-for="(session, i) in timePeriod" :key="session.id">
                 <tr>
-                  <td v-if="i === 0" class="time-cell" :rowspan="timePeriod.length">{{ timePeriodDefine[timePeriodIndex]
-                  }}</td>
+                  <td v-if="i === 0" class="time-cell" :rowspan="timePeriod.length">{{ timePeriodDefine[timePeriodIndex] }}</td>
                   <td class="session-time">{{ session.time }}</td>
                   <td v-for="day in weekDays" :key="day" class="course-cell cursor-pointer"
                     :class="{ 'my-course': getCourse(day, session.id)?.uid === userInfo.id }"
                     @contextmenu.prevent="onRightClick($event, day, session.id)">
                     <div v-if="getCourse(day, session.id)" class="h-full flex flex-col justify-center" draggable="true"
-                      @dragstart="(e) => onDragStart(e, day, session.id)">
+                         @dragstart="(e) => onDragStart(e, day, session.id)"
+                         @drop="(e) => onDrop(e, day, session.id)"
+                         @dragover.prevent @dragenter.prevent>
                       {{ getCourse(day, session.id).name }}
-                      <span v-if="showTeacherName && getCourse(day, session.id).teacher" class="teacher">
-                        {{ getCourse(day, session.id).teacher }}
-                      </span>
                     </div>
-                    <div v-else class="empty-slot h-full" @drop="(e) => onDrop(e, day, session.id)" @dragover.prevent
-                      @dragenter.prevent @dragenter="isDraggingOver = true" @dragleave="isDraggingOver = false"></div>
+                    <div v-else class="empty-slot h-full"
+                         @drop="(e) => onDrop(e, day, session.id)" @dragover.prevent @dragenter.prevent></div>
                   </td>
                 </tr>
               </template>
@@ -401,13 +397,6 @@ document.addEventListener('click', () => {
 .course-table .my-course {
   background-color: #e6f7ff;
   box-shadow: inset 0 0 2px #82d7ff;
-}
-
-.course-table .teacher {
-  display: block;
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
 }
 
 .teacher-item {

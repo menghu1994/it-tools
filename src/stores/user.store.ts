@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia';
+import { authService } from '@/api/auth/auth.service';
+import { useStorage } from '@vueuse/core';
+import type { Ref } from 'vue';
 
 interface IUser {
   _id: string;
@@ -8,15 +11,15 @@ interface IUser {
 }
 
 export const useUserStore = defineStore('user', {
-  state: () => ({
-    user: null as null | IUser,
-  }),
+  state: () => {
+    const user = useStorage('user', null) as Ref<null | IUser>;
+    return {
+      user
+    }
+  },
   actions: {
-    setUser(user: IUser) {
-      this.user = user;
-    },
-    clearUser() {
-      this.user = null;
-    },
+    async fetchMe() {
+      this.user = await authService.getAccount();
+    }
   },
 });
