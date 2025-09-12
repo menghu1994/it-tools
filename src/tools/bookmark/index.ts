@@ -1,11 +1,11 @@
 import { Bookmark } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: 'Bookmark',
+  name: '书签编辑器',
   path: '/bookmark',
-  description: translate('tools.color-converter.description'),
+  description: '编辑浏览器书签',
   keywords: ['bookmark', 'web', 'converter', 'custom'],
   component: () => import('./bookmark.vue'),
   icon: Bookmark,

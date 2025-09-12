@@ -9,7 +9,6 @@ const withUppercase = useQueryParam({ name: 'uppercase', defaultValue: true });
 const withLowercase = useQueryParam({ name: 'lowercase', defaultValue: true });
 const withNumbers = useQueryParam({ name: 'numbers', defaultValue: true });
 const withSymbols = useQueryParam({ name: 'symbols', defaultValue: false });
-const { t } = useI18n();
 
 const [token, refreshToken] = computedRefreshable(() =>
   createToken({
@@ -21,7 +20,7 @@ const [token, refreshToken] = computedRefreshable(() =>
   }),
 );
 
-const { copy } = useCopy({ source: token, text: t('tools.token-generator.copied') });
+const { copy } = useCopy({ source: token, text: 复制到剪贴板 });
 </script>
 
 <template>
@@ -30,35 +29,35 @@ const { copy } = useCopy({ source: token, text: t('tools.token-generator.copied'
       <n-form label-placement="left" label-width="140">
         <div flex justify-center>
           <div>
-            <n-form-item :label="t('tools.token-generator.uppercase')">
+            <n-form-item label="大写 (ABC...)">
               <n-switch v-model:value="withUppercase" />
             </n-form-item>
 
-            <n-form-item :label="t('tools.token-generator.lowercase')">
+            <n-form-item label="小写 (abc...)">
               <n-switch v-model:value="withLowercase" />
             </n-form-item>
           </div>
 
           <div>
-            <n-form-item :label="t('tools.token-generator.numbers')">
+            <n-form-item label="数字 (123...)">
               <n-switch v-model:value="withNumbers" />
             </n-form-item>
 
-            <n-form-item :label="t('tools.token-generator.symbols')">
+            <n-form-item label="符号 (!-;...)">
               <n-switch v-model:value="withSymbols" />
             </n-form-item>
           </div>
         </div>
       </n-form>
 
-      <n-form-item :label="`${t('tools.token-generator.length')} (${length})`" label-placement="left">
+      <n-form-item :label="`长度 (${length})`" label-placement="left">
         <n-slider v-model:value="length" :step="1" :min="1" :max="512" />
       </n-form-item>
 
       <c-input-text
         v-model:value="token"
         multiline
-        :placeholder="t('tools.token-generator.tokenPlaceholder')"
+        placeholder="令牌..."
         readonly
         rows="3"
         autosize
@@ -67,10 +66,10 @@ const { copy } = useCopy({ source: token, text: t('tools.token-generator.copied'
 
       <div mt-5 flex justify-center gap-3>
         <c-button @click="copy()">
-          {{ t('tools.token-generator.button.copy') }}
+          复制
         </c-button>
         <c-button @click="refreshToken">
-          {{ t('tools.token-generator.button.refresh') }}
+          刷新
         </c-button>
       </div>
     </c-card>

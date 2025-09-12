@@ -1,11 +1,11 @@
 import {  Rotate360 } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.wheel-rotate.title'),
+  name: '大转盘',
   path: '/wheel-rotate',
-  description: translate('tools.wheel-rotate.description'),
+  description: '随机大挑战',
   keywords: ['coin', 'random'],
   component: () => import('./wheel-rotate.vue'),
   icon: Rotate360,

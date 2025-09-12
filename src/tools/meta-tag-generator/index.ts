@@ -1,11 +1,10 @@
 import { Tags } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: translate('tools.og-meta-generator.title'),
+  name: '开放式图形元生成器',
   path: '/og-meta-generator',
-  description: translate('tools.og-meta-generator.description'),
+  description: '为您的网站生成开放式图形和社交html元标记。',
   keywords: [
     'meta',
     'tag',

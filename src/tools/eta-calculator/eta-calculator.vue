@@ -24,7 +24,7 @@ const endAt = computed(() =>
 <template>
   <div>
     <div text-justify op-70>
-      {{ $t('tools.eta-calculator.example') }}
+      举个具体的例子，如果你在 3 分钟内洗 5 个盘子，而你有 500 个盘子要洗，那么你需要 5 个小时才能洗完所有盘子。
     </div>
     <n-divider />
     <div flex gap-2>
@@ -46,10 +46,10 @@ const endAt = computed(() =>
           v-model:value="timeSpanUnitMultiplier"
           min-w-130px
           :options="[
-            { label: $t('date.seconds'), value: 1000 },
-            { label: $t('date.minutes'), value: 1000 * 60 },
-            { label: $t('date.hours'), value: 1000 * 60 * 60 },
-            { label: $t('date.days'), value: 1000 * 60 * 60 * 24 },
+            { label: '秒', value: 1000 },
+            { label: '分钟', value: 1000 * 60 },
+            { label: '小时', value: 1000 * 60 * 60 },
+            { label: '天', value: 1000 * 60 * 60 * 24 },
           ]"
         />
       </div>

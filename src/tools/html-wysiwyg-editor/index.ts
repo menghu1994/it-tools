@@ -1,11 +1,11 @@
 import { Edit } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.html-wysiwyg-editor.title'),
+  name: 'HTML所见即所得编辑器',
   path: '/html-wysiwyg-editor',
-  description: translate('tools.html-wysiwyg-editor.description'),
+  description: '在线HTML编辑器具有功能丰富的所见即所得编辑器，立即获得内容的源代码。',
   keywords: ['html', 'wysiwyg', 'editor', 'p', 'ul', 'ol', 'converter', 'live'],
   component: () => import('./html-wysiwyg-editor.vue'),
   icon: Edit,

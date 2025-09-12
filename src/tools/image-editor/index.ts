@@ -1,12 +1,12 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.image-editor.title'),
+  name: '图片编辑器',
   path: '/image-editor',
-  description: translate('tools.image-editor.description'),
-  keywords: ['color', 'converter'],
+  description: '图片涂改',
+  keywords: ['image', 'editor'],
   component: () => import('./image-editor.vue'),
   icon: Palette,
   redirectFrom: ['/image-editor'],

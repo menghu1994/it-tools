@@ -1,11 +1,11 @@
 import {  Rotate360 } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.eat-today.title'),
+  name: '今天吃什么',
   path: '/eat-today',
-  description: translate('tools.eat-today.description'),
+  description: '',
   keywords: ['eat', 'food'],
   component: () => import('./eat-today.vue'),
   icon: Rotate360,

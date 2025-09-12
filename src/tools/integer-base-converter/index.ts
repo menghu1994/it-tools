@@ -1,11 +1,11 @@
 import { ArrowsLeftRight } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.base-converter.title'),
+  name: '整数基转换器',
   path: '/base-converter',
-  description: translate('tools.base-converter.description'),
+  description: '在不同的基数（十进制、十六进制、二进制、八进制、base64…）之间转换数字',
   keywords: ['integer', 'number', 'base', 'conversion', 'decimal', 'hexadecimal', 'binary', 'octal', 'base64'],
   component: () => import('./integer-base-converter.vue'),
   icon: ArrowsLeftRight,

@@ -1,11 +1,11 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.watermark.title'),
+  name: '水印',
   path: '/watermark',
-  description: translate('tools.watermark.description'),
+  description: '图片加水印',
   keywords: ['color', 'converter'],
   component: () => import('./watermark.vue'),
   icon: Palette,

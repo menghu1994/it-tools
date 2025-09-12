@@ -1,11 +1,10 @@
 import { EyeTable } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: translate('tools.table-generator.title'),
+  name: '表格生成器',
   path: '/table-generator',
-  description: translate('tools.table-generator.description'),
+  description: '自定义表格',
   keywords: ['table', 'converter'],
   component: () => import('./table-generator.vue'),
   icon: EyeTable,

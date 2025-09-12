@@ -20,14 +20,13 @@ const version = config.app.version;
 const commitSha = config.app.lastCommitSha.slice(0, 7);
 
 const { tracker } = useTracker();
-const { t } = useI18n();
 
 const toolStore = useToolStore();
 const { favoriteTools, toolsByCategory } = storeToRefs(toolStore);
 
 
 const tools = computed<ToolCategory[]>(() => [
-  ...(favoriteTools.value.length > 0 ? [{ name: t('tools.categories.favorite-tools'), components: favoriteTools.value }] : []),
+  ...(favoriteTools.value.length > 0 ? [{ name: '我的收藏', components: favoriteTools.value }] : []),
   ...toolsByCategory.value,
 ]);
 </script>
@@ -44,14 +43,13 @@ const tools = computed<ToolCategory[]>(() => [
             </div>
             <div class="divider" />
             <!-- <div class="subtitle">
-            {{ $t('home.subtitle') }}
-          </div> -->
+             助力开发人员和 IT 工作者
+          </div>-->
           </div>
         </RouterLink>
 
         <div class="sider-content">
           <div v-if="styleStore.isSmallScreen" flex flex-col items-center>
-            <locale-selector w="90%" />
 
             <div flex justify-center>
               <NavbarButtons />
@@ -87,27 +85,25 @@ const tools = computed<ToolCategory[]>(() => [
 
     <template #content>
       <div flex items-center justify-center gap-2>
-        <c-button circle variant="text" :aria-label="$t('home.toggleMenu')"
+        <c-button circle variant="text" aria-label="切换菜单"
           @click="styleStore.isMenuCollapsed = !styleStore.isMenuCollapsed">
           <NIcon size="25" :component="Menu2" />
         </c-button>
 
-        <c-tooltip :tooltip="$t('home.home')" position="bottom">
-          <c-button to="/" circle variant="text" :aria-label="$t('home.home')">
+        <c-tooltip tooltip="主页" position="bottom">
+          <c-button to="/" circle variant="text" aria-label="主页">
             <NIcon size="25" :component="Home2" />
           </c-button>
         </c-tooltip>
 
-        <c-tooltip :tooltip="$t('home.uiLib')" position="bottom">
+        <c-tooltip tooltip="UI 库" position="bottom">
           <c-button v-if="config.app.env === 'development'" to="/c-lib" circle variant="text"
-            :aria-label="$t('home.uiLib')">
+            aria-label="UI 库">
             <icon-mdi:brush-variant text-20px />
           </c-button>
         </c-tooltip>
 
         <command-palette />
-
-        <locale-selector v-if="!styleStore.isSmallScreen" />
 
         <div>
           <NavbarButtons v-if="!styleStore.isSmallScreen" />

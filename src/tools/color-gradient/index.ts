@@ -1,11 +1,11 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.color-gradient.title'),
+  name: 'Color 渐变',
   path: '/color-gradient',
-  description: translate('tools.color-gradient.description'),
+  description: '背景渐变色生成',
   keywords: ['color', 'converter'],
   component: () => import('./color-gradient.vue'),
   icon: Palette,

@@ -1,11 +1,11 @@
 import { CompareArrowsRound } from '@vicons/material';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.json-diff.title'),
+  name: 'JSON 差异比较',
   path: '/json-diff',
-  description: translate('tools.json-diff.description'),
+  description: '比较两个JSON对象并获得它们之间的差异。',
   keywords: ['json', 'diff', 'compare', 'difference', 'object', 'data'],
   component: () => import('./json-diff.vue'),
   icon: CompareArrowsRound,

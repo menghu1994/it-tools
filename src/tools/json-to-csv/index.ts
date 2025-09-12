@@ -1,11 +1,10 @@
 import { List } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: translate('tools.json-to-csv.title'),
+  name: 'JSON 转 CSV',
   path: '/json-to-csv',
-  description: translate('tools.json-to-csv.description'),
+  description: '使用自动标头检测将JSON转换为CSV。',
   keywords: ['json', 'to', 'csv', 'convert'],
   component: () => import('./json-to-csv.vue'),
   icon: List,

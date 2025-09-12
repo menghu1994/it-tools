@@ -1,11 +1,11 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.screen-record.title'),
+  name: '屏幕录制',
   path: '/screen-record',
-  description: translate('tools.screen-record.description'),
+  description: '屏幕录像并下载',
   keywords: ['color', 'converter'],
   component: () => import('./screen-record.vue'),
   icon: Palette,

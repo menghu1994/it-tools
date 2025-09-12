@@ -1,11 +1,11 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.linux-command.title'),
+  name: 'linux 命令',
   path: '/linux-command',
-  description: translate('tools.linux-command.description'),
+  description: 'linux 命令搜索',
   keywords: ['color', 'converter'],
   component: () => import('./linux-command.vue'),
   icon: Palette,

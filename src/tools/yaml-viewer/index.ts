@@ -1,11 +1,11 @@
 import { AlignJustified } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.yaml-prettify.title'),
+  name: 'YAML格式化',
   path: '/yaml-prettify',
-  description: translate('tools.yaml-prettify.description'),
+  description: '将YAML字符串修饰为友好的可读格式。',
   keywords: ['yaml', 'viewer', 'prettify', 'format'],
   component: () => import('./yaml-viewer.vue'),
   icon: AlignJustified,

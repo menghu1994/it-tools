@@ -134,7 +134,6 @@ declare module 'vue' {
     KeycodeInfo: typeof import('./src/tools/keycode-info/keycode-info.vue')['default']
     LinuxCommand: typeof import('./src/tools/linux-command/linux-command.vue')['default']
     ListConverter: typeof import('./src/tools/list-converter/list-converter.vue')['default']
-    LocaleSelector: typeof import('./src/modules/i18n/components/locale-selector.vue')['default']
     Login: typeof import('./src/pages/Login.vue')['default']
     LoginBg: typeof import('./src/pages/loginBg.vue')['default']
     MacAddressGenerator: typeof import('./src/tools/mac-address-generator/mac-address-generator.vue')['default']

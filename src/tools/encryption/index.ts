@@ -1,11 +1,11 @@
 import { Lock } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.encryption.title'),
+  name: '加密/解密文本',
   path: '/encryption',
-  description: translate('tools.encryption.description'),
+  description: '使用加密算法（如AES、TripleDES、Rabbit或RC4）加密和解密文本明文。',
   keywords: ['cypher', 'encipher', 'text', 'AES', 'TripleDES', 'Rabbit', 'RC4'],
   component: () => import('./encryption.vue'),
   icon: Lock,

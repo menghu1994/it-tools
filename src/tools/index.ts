@@ -93,7 +93,7 @@ import { tool as imagePatina } from './image-patina';
 
 export const toolsByCategory: ToolCategory[] = [
   {
-    name: 'Crypto',
+    name: '加密',
     components: [
       tokenGenerator,
       hashText,
@@ -108,7 +108,7 @@ export const toolsByCategory: ToolCategory[] = [
     ],
   },
   {
-    name: 'Converter',
+    name: '转换器',
     components: [
       dateTimeConverter,
       baseConverter,
@@ -152,7 +152,7 @@ export const toolsByCategory: ToolCategory[] = [
     ],
   },
   {
-    name: 'Images and videos',
+    name: '图片和视频',
     components: [
       qrCodeGenerator,
       wifiQrCodeGenerator,
@@ -164,7 +164,7 @@ export const toolsByCategory: ToolCategory[] = [
     ],
   },
   {
-    name: 'Development',
+    name: '开发',
     components: [
       // gitMemo,
       // randomPortGenerator,
@@ -191,11 +191,11 @@ export const toolsByCategory: ToolCategory[] = [
     ]
   },
   // {
-  //   name: 'Network',
+  //   name: '网络',
   //   components: [ipv4SubnetCalculator, ipv4AddressConverter, ipv4RangeExpander, macAddressLookup, macAddressGenerator, ipv6UlaGenerator],
   // },
   // {
-  //   name: 'Math',
+  //   name: '数学',
   //   components: [
   //     // 数学计算器
   //     mathEvaluator,
@@ -206,7 +206,7 @@ export const toolsByCategory: ToolCategory[] = [
   //   ],
   // },
   {
-    name: 'Measurement',
+    name: '测量',
     components: [
       chronometer,
       temperatureConverter,
@@ -215,14 +215,14 @@ export const toolsByCategory: ToolCategory[] = [
     ],
   },
   {
-    name: 'Teach',
+    name: '教学',
     components: [
       scheduleClass,
       screenRecord
     ],
   },
   {
-    name: "Game",
+    name: "游戏",
     components: [
       coinToss,
       wheelRotate,
@@ -230,7 +230,7 @@ export const toolsByCategory: ToolCategory[] = [
     ]
   },
   {
-    name: 'Text',
+    name: '文本',
     components: [
       textStatistics,
       emojiPicker,

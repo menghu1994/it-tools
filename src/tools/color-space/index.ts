@@ -1,11 +1,11 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.color-space.title'),
+  name: 'Color 主题色',
   path: '/color-space',
-  description: translate('tools.color-space.description'),
+  description: '主题配色',
   keywords: ['color', 'converter'],
   component: () => import('./color-space.vue'),
   icon: Palette,

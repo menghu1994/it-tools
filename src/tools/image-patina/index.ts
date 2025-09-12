@@ -1,11 +1,10 @@
 import { Palette } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: translate('tools.image-patina.title'),
+  name: '图片包浆',
   path: '/image-patina',
-  description: translate('tools.image-patina.description'),
+  description: '',
   keywords: ['color', 'converter'],
   component: () => import('./image-patina.vue'),
   icon: Palette,
