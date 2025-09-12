@@ -91,7 +91,7 @@ onMounted(() => {
         <button @click="addComment" class="btn btn-primary">发表评论</button>
       </div>
       <div v-else class="login-prompt">
-        <p>请<a href="/login">登录</a>后发表评论</p>
+        <p>请<a >登录</a>后发表评论</p>
       </div>
 
       <!-- 评论列表 -->

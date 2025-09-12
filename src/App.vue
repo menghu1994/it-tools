@@ -24,6 +24,7 @@ const themeOverrides = computed(() => (styleStore.isDarkTheme ? darkThemeOverrid
         </component>
       </NNotificationProvider>
     </NMessageProvider>
+    <LoginModal />
   </n-config-provider>
 </template>
 

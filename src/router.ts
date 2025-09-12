@@ -5,7 +5,6 @@ import NotFound from './pages/404.page.vue';
 import { tools } from './tools';
 import { config } from './config';
 import { routes as demoRoutes } from './ui/demo/demo.routes';
-import Login from '@/pages/Login.vue';
 
 const toolsRoutes = tools.map(({ path, name, component, ...config }) => ({
   path,
@@ -26,12 +25,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomePage
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('./pages/Login.vue'),
-      meta: { layout: Login, name: 'Login' },
     },
     {
       path: '/about',

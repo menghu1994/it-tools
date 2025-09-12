@@ -136,6 +136,7 @@ declare module 'vue' {
     ListConverter: typeof import('./src/tools/list-converter/list-converter.vue')['default']
     Login: typeof import('./src/pages/Login.vue')['default']
     LoginBg: typeof import('./src/pages/loginBg.vue')['default']
+    LoginModal: typeof import('./src/pages/Login-modal.vue')['default']
     MacAddressGenerator: typeof import('./src/tools/mac-address-generator/mac-address-generator.vue')['default']
     MacAddressLookup: typeof import('./src/tools/mac-address-lookup/mac-address-lookup.vue')['default']
     MarkdownToHtml: typeof import('./src/tools/markdown-to-html/markdown-to-html.vue')['default']

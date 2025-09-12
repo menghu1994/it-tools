@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
 import { onMounted } from 'vue';
 import { authService } from '@/api/auth/auth.service';
+import { useLoginModalStore } from '@/stores/login-modal.store'
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -12,6 +13,8 @@ const { user } = toRefs(userStore);
 
 const styleStore = useStyleStore();
 const { isDarkTheme } = toRefs(styleStore);
+
+const modalStore = useLoginModalStore();
 
 onMounted(() => {
 
@@ -79,7 +82,7 @@ const logout = async () => {
       </div>
     </n-popover>
     <div v-else>
-      <router-link to="/login">登录</router-link>
+      <c-button round @click="modalStore.open()">登录</c-button>
     </div>
   </div>
 </template>
