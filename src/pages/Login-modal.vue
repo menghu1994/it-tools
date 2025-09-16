@@ -24,6 +24,17 @@ const formRules = {
   email: [{ message: '邮箱不能为空', validator: (value: string) => value !== '' }],
 }
 
+watch(() => modalStore.show, (value) => {
+  if(value) {
+    form.value = {
+      username: '',
+      password: '',
+      rePassword: '',
+      email: ''
+    }
+  }
+})
+
 const login = async () => {
   loading.value = true;
   const res = await authService.login({

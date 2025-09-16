@@ -1,5 +1,5 @@
 <template>
-  <div class="screen_record">
+  <div class="" flex flex-col gap-2>
     <c-card title="屏幕录制">
       <n-form-item label="选择长宽比" label-placement="left" label-width="110" :show-feedback="false" mb-2>
         <c-select v-model="aspectRatio" fullwidth :options="aspectRatioList" />
@@ -189,9 +189,4 @@ function getDisplayMediaOptions() {
 </script>
 
 <style lang="less">
-.screen_record {
-  .nya-select {
-    margin-bottom: 15px;
-  }
-}
 </style>

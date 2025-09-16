@@ -25,11 +25,22 @@ const theme = useTheme();
   border: 1px solid v-bind('theme.borderColor');
   border-radius: 4px;
   padding: 20px 24px;
+  position: relative;
+  margin-top: 1.5rem;
 
   &-title {
     font-size: 16px;
     font-weight: 500;
-    margin-bottom: 20px;
+    position: absolute;
+    top: -1rem;
+    left: 1rem;
+    padding: 0.2rem 1rem;
+    height: 2rem;
+    background-color: v-bind('theme.switchBackgroundColor');
+    border: 1px solid v-bind('theme.switchBorderColor');
+    color: v-bind('theme.borderColor');
+    border-radius: 4px;
+    z-index: 1;
   }
 }
 </style>

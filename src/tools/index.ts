@@ -1,6 +1,7 @@
 import { tool as base64FileConverter } from './base64-file-converter';
 import { tool as base64StringConverter } from './base64-string-converter';
 import { tool as basicAuthGenerator } from './basic-auth-generator';
+import { tool as resume } from './resume';
 
 import { tool as textToUnicode } from './text-to-unicode';
 // import { tool as safelinkDecoder } from './safelink-decoder';
@@ -237,7 +238,8 @@ export const toolsByCategory: ToolCategory[] = [
       // 字符串混淆器
       // stringObfuscator,
       textDiff,
-      marquee
+      marquee,
+      resume
     ],
   }
 ];
