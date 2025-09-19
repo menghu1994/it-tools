@@ -4,7 +4,7 @@ import { defineTool } from '../tool';
 export const tool = defineTool({
   name: '简',
   path: '/resume',
-  description: '',
+  description: '开发中...',
   keywords: ['resume'],
   component: () => import('./resume.vue'),
   icon: ArrowsShuffle,

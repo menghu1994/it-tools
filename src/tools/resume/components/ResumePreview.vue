@@ -1,79 +1,44 @@
 <template>
   <div class="resume-root">
     <!-- 个人信息头部 -->
-    <section @click="$emit('editModule','personal')" cursor-pointer flex justify-between v-if="data && data.personal">
-      <div flex flex-col>
-        <h1>{{ data.personal?.name }}</h1>
-        <div flex flex-1>
-          <span>{{ data.personal?.city }}</span> | <span>{{ data.personal?.email }}</span> | <span>{{ data.personal?.phone }}</span>
-        </div>
-        <div flex>
-          <span>{{ data.personal?.email }}</span>
-          <span>{{ data.personal?.phone }}</span>
-        </div>
-      </div>
-      <div>
-        <img v-if="data.personal?.avatarUrl" :src="data.personal.avatarUrl" class="avatar" />
-      </div>
-    </section>
-    <section v-else class="example" flex space-between>
-      <div flex flex-col gap-2>
-        <h3>姓名</h3>
-        <div flex gap-2>
-          <span>男</span> |  <span>23岁</span>  |  <span>党员</span>  |  <span>广州</span>  |  <span>本科</span>
-        </div>
-        <div flex gap-2>
-          <span>mail.com</span>
-          <span>13001001000</span>
-        </div>
-      </div>
-      <div class="avatar"></div>
-    </section>
+    <PersonalModule :data="personData" @click="$emit('editModule','personal')"></PersonalModule>
 
-    <!-- 渲染模块列表 -->
-    <section v-for="(m, idx) in modules" :key="idx" class="module" @click="$emit('editModule', m.type)">
-      <template v-if="m.type === 'education'">
-        <div v-if="m.value">
-          <div flex gap-2>
-            <div class="time">{{ m.value.from }} — {{ m.value.to }}</div>
-            <div class="body">
-              <div class="title">{{ m.value.school }} · {{ m.value.major }}</div>
-              <div class="sub">{{ m.value.degree }} · GPA: {{ m.value.gpa || '--' }}</div>
-            </div>
-          </div>
-        </div>
-        <div v-else class="sample">教育经历示例（灰色）</div>
-      </template>
-
-      <template v-if="m.type === 'work'">
-        <div v-if="m.value">
-          <div flex gap-2>
-            <div class="time">{{ m.value.from }} — {{ m.value.to }}</div>
-            <div class="body">
-              <div class="title">{{ m.value.company }} · {{ m.value.position }}</div>
-              <ul>
-                <li v-for="(c, i) in m.value.contents" :key="i">{{ c }}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div v-else class="sample">工作经历示例（灰色）</div>
-      </template>
-
-      <!-- 其他模块类似 -->
-    </section>
+    <template v-for="m in modules" :key="m.key">
+      <component :is="compMap[m.key]" :value="m.value" @click="$emit('editModule', m.key)" ></component>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
+import PersonalModule from '../module/personalModule.vue'
+import workModule from '../module/workModule.vue'
+import skillModule from '../module/skillModule.vue'
+import honorModule from '../module/honorModule.vue'
+import campusModule from '../module/campusModule.vue'
+import projectModule from '../module/projectModule.vue'
+import objectiveModule from '../module/objectiveModule.vue'
+import educationModule from '../module/educationModule.vue'
+
+const { data: modules } = defineProps({
   data: { type: Array, default: () => [] }
 });
 
-const modules = props.data;
+const compMap: any = {
+  work: workModule,
+  skills: skillModule,
+  project: projectModule,
+  honor: honorModule,
+  campus: campusModule,
+  education: educationModule,
+  objective: objectiveModule
+}
+
+const personData = computed(() => {
+  return modules.find(m => m.key === 'personal')?.value
+})
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 .resume-root {
   font-family: 'PingFang SC', 'Helvetica Neue', Arial;
   color:#222;
@@ -81,8 +46,37 @@ const modules = props.data;
   h3 {
     margin: 0;
   }
+  section {
+    cursor: pointer;
+    .module-title {
+      color: #2f5785;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      line-height: 21px;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+      padding: 2px 20px;
+      .split-line {
+        display: inline-block;
+        flex: 1;
+        width: 100%;
+        height: 1px;
+        margin-left: 28px;
+        background: #bdd2ea;
+        opacity: 0.7;
+      }
+    }
+  }
   .example {
     color:#999
+  }
+  .module-body {
+    padding: 10px 20px;
+    border-radius: 5px;
+    &:hover {
+      background: #f5f6f7;
+    }
   }
   .avatar {
     width: 65px;
@@ -93,9 +87,14 @@ const modules = props.data;
     overflow: hidden;
   }
 }
-.time { width:120px; color:#666; font-size:13px; }
-.title { font-weight:600; }
-.sample { color:#999; background:#f5f5f5; padding:8px; border-radius:6px; }
-
+.resume_preview_work_info_date {
+  display: inline-block;
+  flex: 1;
+  min-width: 150px;
+  color: #4a90e2;
+  font-weight: normal;
+  letter-spacing: 0;
+  text-align: right;
+}
 
 </style>

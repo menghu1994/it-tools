@@ -20,7 +20,7 @@ const [token, refreshToken] = computedRefreshable(() =>
   }),
 );
 
-const { copy } = useCopy({ source: token, text: 复制到剪贴板 });
+const { copy } = useCopy({ source: token, text: '复制到剪贴板' });
 </script>
 
 <template>

@@ -21,8 +21,8 @@
       </n-tab-pane>
       <n-tab-pane name="module" tab="模板选择">
         <n-radio-group v-model:value="template">
-          <n-radio value="default">默认</n-radio>
-          <n-radio value="modern">现代样式</n-radio>
+          <n-radio value="default">标准</n-radio>
+          <n-radio value="simple">简约</n-radio>
           <n-radio value="compact">紧凑样式</n-radio>
         </n-radio-group>
       </n-tab-pane>
@@ -32,21 +32,24 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useResumeStore } from '@/stores/resume.store';
+import { resumeModuleLabelMap, useResumeStore } from '@/stores/resume.store';
 import Draggable from 'vuedraggable';
+import type { ModuleKey } from '@/tools/resume/resume.type';
 
 const store = useResumeStore();
-const modules = ref([
-  { key:'personal', label:'个人信息', visible: store.resume.modulesVisible.personal },
-  { key:'objective', label:'求职意向', visible: store.resume.modulesVisible.objective },
-  { key:'education', label:'教育经历', visible: store.resume.modulesVisible.education },
-  { key:'work', label:'工作经历', visible: store.resume.modulesVisible.work },
-  { key:'project', label:'项目经历', visible: store.resume.modulesVisible.project },
-  { key:'campus', label:'校内经历', visible: store.resume.modulesVisible.campus },
-  { key:'honor', label:'荣誉奖项', visible: store.resume.modulesVisible.honor },
-  { key:'skills', label:'个人技能', visible: store.resume.modulesVisible.skills },
-  { key:'custom', label:'自定义模块', visible: store.resume.modulesVisible.custom },
-]);
+const modules = ref<{ key: ModuleKey, label: string, visible: boolean }[]>([]);
+
+watch(
+  () => store.resume,
+  () => {
+    modules.value = store.resume.modulesOrder.map(module => ({
+      key: module,
+      label: resumeModuleLabelMap[module],
+      visible: store.resume.modulesVisible[module]
+    }))
+  },
+  { immediate: true }
+)
 
 const dragOptions = {
   animation: 200,

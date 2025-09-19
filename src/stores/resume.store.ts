@@ -7,35 +7,49 @@ export interface ResumeState {
   id?: string;
   template: string;
   modulesOrder: ModuleKey[];
-  modulesVisible: Record<ModuleKey, boolean>;
-  personal: PersonalInfo;
-  objective: Objective;
-  education: EducationItem[];
-  work: WorkItem[];
-  project: any[];
-  campus: any[];
-  honor: any[];
-  skills: string[]; // 自定义技能项
-  custom: { id:string; title: string; content: string }[];
+  modulesVisible: Record<ModuleKey | string, boolean>;
+  data: {
+    personal?: PersonalInfo;
+    objective?: Objective;
+    education?: EducationItem[];
+    work?: WorkItem[];
+    project?: any[];
+    campus?: any[];
+    honor?: any[];
+    skills?: string[];
+    custom?: { id:string; title: string; content: string }[];
+  }
+}
+
+export const resumeModuleLabelMap: Record<ModuleKey | string, string> = {
+  'personal': '个人信息',
+  'objective': '求职意向',
+  'education': '教育经历',
+  'work': '工作经历',
+  'project': '项目经历',
+  'campus': '校内经历',
+  'honor': '荣誉奖项',
+  'skills': '个人技能',
 }
 
 export const useResumeStore = defineStore('resume', () => {
   const resume = ref<ResumeState>({
     id: undefined,
     template: 'default',
-    modulesOrder: ['personal','objective','education','work','project','campus','honor','skills','custom'],
+    modulesOrder: ['personal','objective','education','work','project','campus','honor','skills'],
     modulesVisible: {
-      personal:true, objective:true, education:true, work:true, project:true, campus:true, honor:true, skills:true, custom:true
+      personal:true, objective:true, education:true, work:true, project:true, campus:true, honor:true, skills:true
     },
-    personal: {},
-    objective: {},
-    education: [],
-    work: [],
-    project: [],
-    campus: [],
-    honor: [],
-    skills: [],
-    custom: []
+    data: {
+      personal: {},
+      objective: {},
+      education: [],
+      work: [],
+      project: [],
+      campus: [],
+      honor: [],
+      skills: []
+    }
   });
 
   async function init(id?: string) {
@@ -48,14 +62,12 @@ export const useResumeStore = defineStore('resume', () => {
   }
 
   async function saveModuleData(moduleKey: string, payload: any) {
-    // optimistic update
     (resume.value as any)[moduleKey] = payload;
-    // call backend
     await saveModule(resume.value.id!, moduleKey, payload);
   }
 
   async function saveMeta() {
-    await saveResumeMeta({ id: resume.value.id, template: resume.value.template, modulesOrder: resume.value.modulesOrder, modulesVisible: resume.value.modulesVisible});
+    await saveResumeMeta(resume.value);
   }
 
   return { resume, init, saveModuleData, saveMeta };
