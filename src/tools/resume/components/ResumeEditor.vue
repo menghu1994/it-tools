@@ -28,7 +28,7 @@ const resumeData = ref<{ key: ModuleKey, value: any }[]>([]);
 async function renders(){
   const r = store.resume;
 
-  resumeData.value = r.modulesOrder.map(moduleKey => ({
+  resumeData.value = r.modulesOrder.filter(m => r.modulesVisible[m]).map(moduleKey => ({
     key: moduleKey,
     value: r.data[moduleKey]
   }))

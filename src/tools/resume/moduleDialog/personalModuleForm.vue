@@ -23,7 +23,8 @@
             <n-date-picker v-model:value="form.birth" type="date" placeholder="请选择" size="small" />
           </n-form-item>
           <n-form-item label="参加工作时间" flex-1>
-            <n-date-picker v-model:value="form.firstWorking" type="date" placeholder="请选择" size="small" />
+            <n-checkbox v-model:checked="form.fresh" class="extra-condition">应届毕业生</n-checkbox>
+            <n-date-picker v-model:value="form.firstWorking" :disabled="form.fresh" type="date" placeholder="请选择" size="small" />
           </n-form-item>
         </div>
         <n-form-item label="手机号">

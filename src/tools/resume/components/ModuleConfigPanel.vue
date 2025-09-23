@@ -2,22 +2,17 @@
   <n-card>
     <n-tabs type="line" animated>
       <n-tab-pane name="config" tab="模块配置">
-        <Draggable
-          :list="modules"
-          v-bind="dragOptions"
-          class="flex flex-col"
-          item-key="label"
-          handle=".handle"
-          @end="onUpdateModuleSort"
-        >
+        <div class="list-item" style="padding-left: 24px;">个人信息</div>
+        <Draggable :list="modules" v-bind="dragOptions" class="flex flex-col" item-key="label" handle=".handle"
+          @end="onUpdateModuleSort">
           <template #item="{ element: tool }">
             <n-space class="list-item" align="center" justify="space-between">
-              <n-checkbox :checked="tool.visible" :label="tool.label" @update:checked="onToggle(tool.key,$event)" />
-              <icon-mdi-view-list cursor-move class="handle"/>
+              <n-checkbox v-model:checked="tool.visible" :label="tool.label" @update:checked="onToggle(tool.key, $event)" v-if="tool.key !== 'personal'" />
+              <icon-mdi-view-list cursor-move class="handle" v-if="tool.key !== 'personal'"/>
             </n-space>
           </template>
         </Draggable>
-<!--        <n-button @click="saveConfig" type="primary">保存配置</n-button>-->
+        <!--        <n-button @click="saveConfig" type="primary">保存配置</n-button>-->
       </n-tab-pane>
       <n-tab-pane name="module" tab="模板选择">
         <n-radio-group v-model:value="template">
@@ -42,7 +37,7 @@ const modules = ref<{ key: ModuleKey, label: string, visible: boolean }[]>([]);
 watch(
   () => store.resume,
   () => {
-    modules.value = store.resume.modulesOrder.map(module => ({
+    modules.value = store.resume.modulesOrder.filter(m => m !== 'personal').map(module => ({
       key: module,
       label: resumeModuleLabelMap[module],
       visible: store.resume.modulesVisible[module]
@@ -63,7 +58,7 @@ const template = computed({
   set: v => store.resume.template = v
 });
 
-function onToggle(key:string, val:boolean){
+function onToggle(key: string, val: boolean) {
   store.resume.modulesVisible[key] = val;
 }
 
@@ -71,7 +66,7 @@ const onUpdateModuleSort = () => {
   store.resume.modulesOrder = modules.value.map(item => item.key)
 }
 
-function saveConfig(){
+function saveConfig() {
   store.saveMeta();
 }
 </script>

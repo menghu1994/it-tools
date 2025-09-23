@@ -36,6 +36,7 @@ const compMap: any = {
 const personData = computed(() => {
   return modules.find(m => m.key === 'personal')?.value
 })
+
 </script>
 
 <style lang="less">

@@ -1,38 +1,52 @@
-<script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
-});
+<template>
+  <n-card style="width: 428px" title="个人技能" :bordered="false" size="huge" role="dialog" aria-modal="true">
+    <n-form :model="form" ref="formRef" label-placement="top" label-width="100">
+      <n-input v-model:value="form.skill" :placeholder="placeholderContent" type="textarea" size="medium"
+        :autosize="{ minRows: 5 }" />
+    </n-form>
+    <template #footer>
+      <div flex flex-row-reverse gap-2>
+        <c-button @click="onSave" type="primary">保存</c-button>
+        <c-button @click="onCancel">取消</c-button>
+      </div>
+    </template>
+  </n-card>
+</template>
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useResumeStore } from '@/stores/resume.store';
+
+const store = useResumeStore();
+const emit = defineEmits(['updateData']);
+
+const formRef = ref();
+const form = ref<any>({});
+
+const placeholderContent = `计算机能力：PPT（可制作模板）；Photoshop（可制作海报）
+语言技能：英语（CET-6）；韩语（可读写）
+专业证书：计算机等级考试证书`;
+
+onMounted(() => {
+  form.value = { ...store.resume.data['skills'] }
+})
+
+
+const onCancel = () => {
+  emit('updateData')
+}
+const onSave = () => {
+  emit('updateData', form.value)
 }
 </script>
 
-<template>
-  <section>
-    <div class="module-title">
-      <span>个人技能</span>
-      <span class="split-line"></span>
-    </div>
-    <div v-if="hasValue(data)" class="module-body">
-      {{ data.contents }}
-    </div>
-    <div v-else class="example module-body" flex flex-col gap-1>
-      <div>
-        语言技能：英语CET6、粤语
-        办公技能：熟练使用Office 办公软件、Axure RP、Visio
-      </div>
-    </div>
-  </section>
-</template>
-
 <style scoped lang="less">
-
+.avatar {
+  width: 65px;
+  height: 90px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-sizing: content-box;
+  border-radius: 3px;
+  overflow: hidden;
+}
 </style>

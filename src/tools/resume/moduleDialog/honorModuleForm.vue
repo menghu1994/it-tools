@@ -1,47 +1,47 @@
-<script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
-});
+<template>
+  <n-card style="width: 428px" title="荣誉奖项" :bordered="false" size="huge" role="dialog" aria-modal="true">
+    <n-form :model="form" ref="formRef" flex gap-2 items-center>
+      <c-input-text v-model:value="form.competitionAwards" placeholder="竞赛奖项、奖学金等" />
+      <n-date-picker v-model:value="form.date" type="date" clearable size="small" placeholder="时间"/>
+    </n-form>
+    <template #footer>
+      <div flex flex-row-reverse gap-2>
+        <c-button @click="onSave" type="primary">保存</c-button>
+        <c-button @click="onCancel">取消</c-button>
+      </div>
+    </template>
+  </n-card>
+</template>
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useResumeStore } from '@/stores/resume.store';
+
+const store = useResumeStore();
+const emit = defineEmits(['updateData']);
+
+const formRef = ref();
+const form = ref<any>({});
+
+onMounted(() => {
+  form.value = { ...store.resume.data['honor'] }
+})
+
+const onCancel = () => {
+  emit('updateData')
+}
+const onSave = () => {
+  emit('updateData', form.value)
 }
 </script>
 
-<template>
-  <section>
-    <div class="module-title">
-      <span>荣誉奖项</span>
-      <span class="split-line"></span>
-    </div>
-    <div v-if="hasValue(data)" flex flex-col gap-1 class="module-body">
-      <div flex gap-2 font-bold items-center>
-        <span>{{ data.comp }}</span>
-        <span>QQ邮箱产品部</span>
-        <span>产品实习生</span>
-        <span class="resume_preview_work_info_date">2018.9 - 2020.3</span>
-      </div>
-      <div>QQ邮箱用户运营</div>
-      <div>
-        负责版本上线后的推广工作，通过微博、博客和论坛等渠道将新功能触达用户
-      </div>
-    </div>
-    <div v-else class="example module-body" flex flex-col gap-1>
-      <div flex flex-col gap-2>
-        <span>2014.8 腾讯大学求是杯“腾讯文化奖”金奖</span>
-        <span>2014.3 腾讯大学一等奖学金</span>
-      </div>
-    </div>
-  </section>
-</template>
-
 <style scoped lang="less">
-
+.avatar {
+  width: 65px;
+  height: 90px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-sizing: content-box;
+  border-radius: 3px;
+  overflow: hidden;
+}
 </style>
