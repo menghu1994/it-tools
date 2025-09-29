@@ -55,7 +55,8 @@ function openEdit(moduleKey:string, data:any){
   formVisible.value = true;
 }
 async function onSave({ moduleKey, payload }: any){
-  await store.saveModuleData(moduleKey, payload);
+  // await store.saveModuleData(moduleKey, payload);
+  store.saveData(moduleKey, payload)
   formVisible.value = false;
   await renders();
 }

@@ -61,6 +61,10 @@ export const useResumeStore = defineStore('resume', () => {
     }
   }
 
+  function saveData(key: ModuleKey, value: any): void {
+    resume.value.data[key] = value;
+  }
+
   async function saveModuleData(moduleKey: string, payload: any) {
     (resume.value as any)[moduleKey] = payload;
     await saveModule(resume.value.id!, moduleKey, payload);
@@ -70,5 +74,5 @@ export const useResumeStore = defineStore('resume', () => {
     await saveResumeMeta(resume.value);
   }
 
-  return { resume, init, saveModuleData, saveMeta };
+  return { resume, init, saveModuleData, saveMeta, saveData };
 });
