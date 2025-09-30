@@ -25,7 +25,7 @@ const formRules = {
 }
 
 watch(() => modalStore.show, (value) => {
-  if(value) {
+  if (value) {
     form.value = {
       username: '',
       password: '',
@@ -70,17 +70,23 @@ const regist = async () => {
             <div class="sign-in-htm">
               <h1>Welcome</h1>
               <form class="form" @submit.prevent="login">
-                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名" raw-text mb-2 />
-                <c-input-text v-model:value="form.password" :validation-rules="formRules.password"" placeholder="密码" raw-text mb-2 />
+                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名"
+                  raw-text mb-2 />
+                <c-input-text v-model:value="form.password" :validation-rules="formRules.password" placeholder="密码"
+                  raw-text mb-2 />
                 <c-button w-full :disabled="loading">登录</c-button>
               </form>
             </div>
             <div class="sign-up-htm">
               <form class="form" @submit.prevent="regist">
-                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名" raw-text mb-2 />
-                <c-input-text v-model:value="form.password" :validation-rules="formRules.password" placeholder="密码" type="password" raw-text mb-2 />
-                <c-input-text v-model:value="form.rePassword" :validation-rules="formRules.rePassword" placeholder="再次输入密码" type="password" raw-text mb-2 />
-                <c-input-text v-model:value="form.email" :validation-rules="formRules.password" placeholder="邮箱" raw-text mb-2 />
+                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名"
+                  raw-text mb-2 />
+                <c-input-text v-model:value="form.password" :validation-rules="formRules.password" placeholder="密码"
+                  type="password" raw-text mb-2 />
+                <c-input-text v-model:value="form.rePassword" :validation-rules="formRules.rePassword"
+                  placeholder="再次输入密码" type="password" raw-text mb-2 />
+                <c-input-text v-model:value="form.email" :validation-rules="formRules.password" placeholder="邮箱"
+                  raw-text mb-2 />
                 <c-button w-full :disabled="loading">注册</c-button>
               </form>
             </div>
@@ -129,7 +135,8 @@ form {
   position: absolute;
   padding: 2rem 0;
 
-  .sign-in, .sign-up {
+  .sign-in,
+  .sign-up {
     display: none;
   }
 
@@ -142,16 +149,17 @@ form {
     cursor: pointer;
   }
 
-  .sign-in:checked + .tab, .sign-up:checked + .tab {
+  .sign-in:checked+.tab,
+  .sign-up:checked+.tab {
     font-weight: bold;
     border-color: #1161ee;
   }
 
-  .sign-in:checked + .tab + .sign-up + .tab + .login-form .sign-in-htm {
+  .sign-in:checked+.tab+.sign-up+.tab+.login-form .sign-in-htm {
     transform: rotate(0);
   }
 
-  .sign-up:checked + .tab + .login-form .sign-up-htm {
+  .sign-up:checked+.tab+.login-form .sign-up-htm {
     transform: rotate(0);
   }
 }

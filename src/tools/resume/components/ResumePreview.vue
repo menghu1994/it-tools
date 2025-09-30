@@ -1,9 +1,8 @@
 <template>
   <div class="resume-root">
     <!-- 个人信息头部 -->
-    <PersonalModule :data="personData" @click="$emit('editModule','personal')"></PersonalModule>
-
-    <template v-for="m in modules" :key="m.key">
+    <PersonalModule :value="personData" @click="$emit('editModule','personal')"></PersonalModule>
+    <template v-for="m in props.data" :key="m.key">
       <component :is="compMap[m.key]" :value="m.value" @click="$emit('editModule', m.key)" ></component>
     </template>
   </div>
@@ -19,7 +18,7 @@ import projectModule from '../module/projectModule.vue'
 import objectiveModule from '../module/objectiveModule.vue'
 import educationModule from '../module/educationModule.vue'
 
-const { data: modules } = defineProps({
+const props = defineProps({
   data: { type: Array, default: () => [] }
 });
 
@@ -34,7 +33,7 @@ const compMap: any = {
 }
 
 const personData = computed(() => {
-  return modules.find(m => m.key === 'personal')?.value
+  return props.data.find(m => m.key === 'personal')?.value
 })
 
 </script>

@@ -1,18 +1,10 @@
 <script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
+import { useModule } from './useModule';
+const props = defineProps({
+	value: { type: Object || Array, default: () => { } }
 });
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
-}
+const { data, hasValue } = useModule(props)
 </script>
 
 <template>
@@ -23,7 +15,10 @@ const hasValue = (value: any): boolean => {
     </div>
     <div v-if="hasValue(data)" class="module-body">
       <div flex gap-2>
-        {{ data.from }} — {{ data.to }}
+        <span v-if="data.post">求职岗位：{{ data.post }}</span>|
+        <span v-if="data.intendedCities">意向城市：{{ data.intendedCities }}</span>|
+        <span>期望薪资：{{ data.lowest === 0 ? '面议' : (data.lowest + '-' + data.highest + 'k') }}</span>|
+        <span v-if="data.arrivalTime">到岗时间：{{ data.arrivalTime }}</span>
       </div>
     </div>
     <div v-else class="example module-body" flex gap-2>
@@ -35,6 +30,4 @@ const hasValue = (value: any): boolean => {
   </section>
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

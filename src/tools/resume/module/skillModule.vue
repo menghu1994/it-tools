@@ -1,18 +1,10 @@
 <script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
+import { useModule } from './useModule';
+const props = defineProps({
+	value: { type: Object || Array, default: () => { } }
 });
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
-}
+const { data, hasValue } = useModule(props)
 </script>
 
 <template>
@@ -22,7 +14,7 @@ const hasValue = (value: any): boolean => {
       <span class="split-line"></span>
     </div>
     <div v-if="hasValue(data)" class="module-body">
-      {{ data.contents }}
+      {{ data.skill }}
     </div>
     <div v-else class="example module-body" flex flex-col gap-1>
       <div>
@@ -33,6 +25,4 @@ const hasValue = (value: any): boolean => {
   </section>
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

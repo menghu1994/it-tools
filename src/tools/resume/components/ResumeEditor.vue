@@ -33,7 +33,6 @@ async function renders(){
     value: r.data[moduleKey]
   }))
 
-  console.error(resumeData.value)
 }
 
 

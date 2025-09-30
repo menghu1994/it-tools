@@ -14,7 +14,7 @@
             </n-form-item>
           </n-grid-item>
           <n-grid-item>
-            <div class="n-form-item-label__text" style="margin-bottom: 8px;">avatar</div>
+            <div class="n-form-item-label__text" style="margin-top: 8px;">avatar</div>
             <div class="avatar"></div>
           </n-grid-item>
         </n-grid>
@@ -28,14 +28,14 @@
           </n-form-item>
         </div>
         <n-form-item label="手机号">
-          <c-input-text v-model:value="form.company" placeholder="输入手机号" />
+          <c-input-text v-model:value="form.phoneNumber" placeholder="输入手机号" />
         </n-form-item>
         <n-form-item label="邮箱(必填)">
-          <c-input-text v-model:value="form.position" placeholder="输入邮箱" />
+          <c-input-text v-model:value="form.email" placeholder="输入邮箱" />
         </n-form-item>
         <div flex gap-2>
           <n-form-item label="籍贯" flex-1>
-            <c-input-text v-model:value="form.home" placeholder="输入籍贯" />
+            <c-input-text v-model:value="form.originPlace" placeholder="输入籍贯" />
           </n-form-item>
           <n-form-item label="政治面貌" flex-1>
             <c-select v-model:value="form.political" :options="PoliticalOutlookSelection" placeholder="请选择" size="small" clearable />
@@ -102,8 +102,10 @@ const onSave = () => {
   width: 65px;
   height: 90px;
   border: 1px solid rgba(0,0,0,0.07);
+  background-color: #F5F6F7;
   box-sizing: content-box;
   border-radius: 3px;
   overflow: hidden;
+  cursor: pointer;
 }
 </style>

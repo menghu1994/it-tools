@@ -1,18 +1,10 @@
 <script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
+import { useModule } from './useModule';
+const props = defineProps({
+	value: { type: Object || Array, default: () => { } }
 });
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
-}
+const { data, hasValue,formatDate } = useModule(props)
 </script>
 
 <template>
@@ -21,14 +13,13 @@ const hasValue = (value: any): boolean => {
       <span>工作经历</span>
       <span class="split-line"></span>
     </div>
-    {{  data  }}1
     <div v-if="hasValue(data)" flex flex-col gap-1  class="module-body">
       <div flex gap-2 font-bold items-center>
-        <span>{{ data.company }}</span>
-        <span>{{ data.department }}</span>
-        <span>{{ data.position }}</span>
+        <span v-if="data.company">{{ data.company }}</span>
+        <span v-if="data.department">{{ data.department }}</span>
+        <span v-if="data.position">{{ data.position }}</span>
         <span class="resume_preview_work_info_date" v-if="data.workDuring">
-          {{data.workDuring[0]}} - {{ data.workDuring[1] }}
+          {{formatDate(data.workDuring[0])}} - {{ formatDate(data.workDuring[1]) }}
         </span>
       </div>
       <template v-if="data.projectExperience">

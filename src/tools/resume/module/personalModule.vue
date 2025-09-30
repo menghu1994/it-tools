@@ -1,39 +1,38 @@
 <script setup lang="ts">
-import { useResumeStore } from '@/stores/resume.store';
-
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
+import { useModule } from './useModule';
+const props = defineProps({
+	value: { type: Object || Array, default: () => { } }
 });
 
-const store = useResumeStore();
-// store.template
+const { data, hasValue,formatDate } = useModule(props)
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
+const getAge = (birth: number) => {
+  return new Date().getFullYear() - new Date(birth).getFullYear();
 }
 </script>
 
 <template>
-  <section cursor-pointer flex justify-between v-if="hasValue(data)">
-    <div flex flex-col class="module-body">
-      <h1>{{ data?.name }}</h1>
-      <div flex flex-1>
-        <span>{{ data?.city }}</span> | <span>{{ data?.email }}</span> | <span>{{ data?.phone }}</span>
+  <section cursor-pointer flex justify-between  class="module-body" v-if="hasValue(data)">
+    <div flex flex-col>
+      <h3>{{ data?.name }}</h3>
+      <div flex flex-1 gap-2>
+        <span>{{ data?.highestEducation }}</span>|
+        <span>{{ data?.political }}</span>|
+        <span>{{ getAge(data.birth) }}</span>|
+        <span>{{ data?.phone }}</span>|
+        <span>{{ data?.sex }}</span>
       </div>
-      <div flex>
+      <div flex gap-2>
+        <span>所在地： {{ data?.address }}</span>
+        <span>籍贯： {{ data?.originPlace }}</span>
+      </div>
+      <div flex gap-2>
         <span>{{ data?.email }}</span>
-        <span>{{ data?.phone }}</span>
+        <span>{{ data?.phoneNumber }}</span>
       </div>
     </div>
-    <div>
-      <img v-if="data?.avatarUrl" :src="data.avatarUrl" class="avatar" />
+    <div class="avatar" >
+      <img v-if="data?.avatarUrl" :src="data.avatarUrl" />
     </div>
   </section>
   <section v-else class="example module-body" flex justify-between>
@@ -52,5 +51,14 @@ const hasValue = (value: any): boolean => {
 </template>
 
 <style scoped lang="less">
-
+.avatar {
+  width: 65px;
+  height: 90px;
+  border: 1px solid rgba(0,0,0,0.07);
+  background-color: #F5F6F7;
+  box-sizing: content-box;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+}
 </style>

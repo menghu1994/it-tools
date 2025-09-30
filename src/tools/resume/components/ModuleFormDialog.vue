@@ -1,9 +1,7 @@
 <template>
   <n-modal v-model:show="show">
-    <template v-if="show">
       <component :is="compFormMap[props.moduleKey]" @updateData="updateResumeModule($event, props.moduleKey)">
       </component>
-    </template>
   </n-modal>
 </template>
 

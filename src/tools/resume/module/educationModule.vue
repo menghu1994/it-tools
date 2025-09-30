@@ -1,18 +1,10 @@
 <script setup lang="ts">
-const { data } = defineProps({
-  data: { type: Object, default: () => {} }
+import { useModule } from './useModule';
+const props = defineProps({
+	value: { type: Object || Array, default: () => { } }
 });
 
-const hasValue = (value: any): boolean => {
-  if(!value) { return false }
-  if(Array.isArray(value)) {
-    return !!value.length
-  }
-  if(typeof value === 'object') {
-    return Object.keys(value).length > 0;
-  }
-  return true
-}
+const { data, hasValue,formatDate } = useModule(props)
 </script>
 
 <template>
@@ -22,12 +14,15 @@ const hasValue = (value: any): boolean => {
       <span class="split-line"></span>
     </div>
     <div v-if="hasValue(data)" class="module-body">
-      <div flex gap-2>
-        <div class="time">{{ data.from }} — {{ data.to }}</div>
-        <div class="body">
-          <div class="title">{{ data.school }} · {{ data.major }}</div>
-          <div class="sub">{{ data.degree }} · GPA: {{ data.gpa || '--' }}</div>
-        </div>
+      <div flex gap-2 font-bold items-center>
+        <span v-if="data.school">{{ data.school }}</span>
+        <span v-if="data.education">{{ data.education }}</span>
+        <span v-if="data.major">{{ data.major }}</span>
+        <span class="resume_preview_work_info_date" v-if="data.eduDuring">{{ formatDate(data.eduDuring[0]) }} - {{ formatDate(data.eduDuring[1]) }}</span>
+      </div>
+      <div flex gap-6 items-center>
+        <span v-if="data.gpa">绩点: {{ data.gpa }}</span>
+        <span v-if="data.ranking">成绩排名: {{ data.ranking }}</span>
       </div>
     </div>
     <div v-else class="example module-body" flex flex-col gap-1>

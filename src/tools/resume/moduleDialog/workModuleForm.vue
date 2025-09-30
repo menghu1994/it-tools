@@ -72,7 +72,7 @@ const onCancel = () => {
   emit('updateData')
 }
 const onSave = () => {
-  emit('updateData', { moduleKey: 'work', payload: form.value })
+  emit('updateData', form.value)
 }
 </script>
 
