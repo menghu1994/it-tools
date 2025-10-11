@@ -14,7 +14,6 @@
       <button class="btn primary" @click="exportCrop">导出裁剪图</button>
     </div> -->
     <input type="file" accept="image/*" @change="onFileChange" hidden ref="fileInputRef"/>
-
     <div class="editor-wrap" ref="wrapRef">
       <canvas ref="canvasRef" class="canvas" @pointerdown="onPointerDown" @wheel.prevent="onWheel" @dblclick="fileInputRef?.click()"></canvas>
 
@@ -30,10 +29,10 @@
       </div>
     </div>
 
-    <div class="preview-area">
+    <!-- <div class="preview-area">
       <h4>实时预览</h4>
       <canvas ref="previewRef" :width="previewSize" :height="previewSize" class="preview-canvas"></canvas>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -93,10 +92,7 @@ const state = reactive({
   cropStart: { x: 0, y: 0, w: 0, h: 0 },
 });
 
-const outputWidth = ref(800);
-const outputHeight = ref(800);
 const previewSize = ref(200);
-const lockAspect = ref(false);
 
 // handles list for template
 const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
@@ -112,12 +108,13 @@ const cropLayerStyle = computed(() => {
   const x = state.cropRect.x / scale;
   const y = state.cropRect.y / scale;
   const w = state.cropRect.w / scale;
-  const h = state.cropRect.h / scale;
+  const h = w * props.ratio
   return {
     left: `${x}px`,
     top: `${y}px`,
     width: `${w}px`,
     height: `${h}px`,
+    display: state.img? 'block' : 'none',
   };
 });
 
@@ -162,7 +159,8 @@ function resetView() {
   state.translate.y = (ch - state.imgNaturalH * scale) / 2;
   // default crop box centered and smaller than canvas
   state.cropRect.w = Math.min( Math.floor(cw * 0.6), Math.floor(state.imgNaturalW * scale * 0.8) );
-  state.cropRect.h = Math.min( Math.floor(ch * 0.6), Math.floor(state.imgNaturalH * scale * 0.8) );
+  // const h = Math.min( Math.floor(ch * 0.6), Math.floor(state.imgNaturalH * scale * 0.8) ); 
+  state.cropRect.h = state.cropRect.w * props.ratio;
   state.cropRect.x = Math.floor((cw - state.cropRect.w) / 2);
   state.cropRect.y = Math.floor((ch - state.cropRect.h) / 2);
 }
@@ -239,7 +237,7 @@ function draw() {
     ctx.fillStyle = '#999';
     ctx.font = '30px sans-serif';
     ctx.textAlign = "center";
-    ctx.fillText('双击选择/替换图片', 320, 240);
+    ctx.fillText('双击选择/替换图片', c.width/2, c.height/2);
   }
 
   updatePreview();
@@ -281,7 +279,7 @@ function updatePreview() {
 // export cropped image - returns blob or triggers download
 async function exportCrop() {
   if (!state.img) return;
-  const blob = await getCroppedBlob(outputWidth.value, outputHeight.value, 'image/png', 0.92);
+  const blob = await getCroppedBlob(props.outputWidth, props.outputHeight, 'image/png', 0.92);
   // download
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -289,6 +287,20 @@ async function exportCrop() {
   a.download = `crop_${Date.now()}.png`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+async function saveCropper() {
+  if (!state.img) return;
+  const blob = await getCroppedBlob(props.outputWidth, props.outputHeight, 'image/png', 0.92);
+  return await blobToBase64(blob)
+}
+
+function blobToBase64(blob: Blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
 }
 
 // produce Blob with specified output size and mime
@@ -440,7 +452,7 @@ function onPointerMove(e: PointerEvent) {
   if (nh < minSize) nh = minSize;
 
   // if lockAspect, maintain aspect ratio
-  if (lockAspect.value) {
+  if (props.lockAspect) {
     const ratio = state.cropStart.w / state.cropStart.h || 1;
     if (['nw', 'ne', 'sw', 'se', 'w', 'e', 'n', 's'].includes(state.dragMode)) {
       // prefer adjusting both based on the larger delta
@@ -555,6 +567,7 @@ function setImageUrl(url: string) {
 // small helper to set output size
 // function setOutputSize(w:number,h:number){ outputWidth.value=w; outputHeight.value=h; }
 
+defineExpose({ resizeCanvas, saveCropper })
 </script>
 
 <style scoped>

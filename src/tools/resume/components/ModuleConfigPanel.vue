@@ -16,9 +16,9 @@
       </n-tab-pane>
       <n-tab-pane name="module" tab="模板选择">
         <n-radio-group v-model:value="template">
-          <n-radio value="default">标准</n-radio>
+          <n-radio value="standard">标准</n-radio>
           <n-radio value="simple">简约</n-radio>
-          <n-radio value="compact">紧凑样式</n-radio>
+          <!-- <n-radio value="compact">紧凑样式</n-radio> -->
         </n-radio-group>
       </n-tab-pane>
     </n-tabs>
@@ -63,7 +63,7 @@ function onToggle(key: string, val: boolean) {
 }
 
 const onUpdateModuleSort = () => {
-  store.resume.modulesOrder = modules.value.map(item => item.key)
+  store.resume.modulesOrder = ['personal',...modules.value.map(item => item.key)]
 }
 
 function saveConfig() {

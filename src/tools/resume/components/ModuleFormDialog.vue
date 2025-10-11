@@ -84,8 +84,11 @@ const updateResumeModule = (data: any, key: any) => {
 
     .extra-condition {
       position: absolute;
-      top: 0;
+      top: -50%;
+      right: 0;
+      width: auto;
       font-size: 11px;
+      color: #2e3033
     }
   }
 

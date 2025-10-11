@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
+import { useResumeStore } from '@/stores/resume.store';
 export function useModule(props: { readonly value: Record<string, any>; }) {
 	const data = computed(() => props.value)
+	const store = useResumeStore();
 	const hasValue = (value: any): boolean => {
 		if(!value) { return false }
 		if(Array.isArray(value)) {
@@ -19,6 +21,7 @@ export function useModule(props: { readonly value: Record<string, any>; }) {
 
   return {
     data,
+		layout: store.resume.template,
     hasValue,
 		formatDate
   };

@@ -35,7 +35,7 @@ export const resumeModuleLabelMap: Record<ModuleKey | string, string> = {
 export const useResumeStore = defineStore('resume', () => {
   const resume = ref<ResumeState>({
     id: undefined,
-    template: 'default',
+    template: 'standard',
     modulesOrder: ['personal','objective','education','work','project','campus','honor','skills'],
     modulesVisible: {
       personal:true, objective:true, education:true, work:true, project:true, campus:true, honor:true, skills:true

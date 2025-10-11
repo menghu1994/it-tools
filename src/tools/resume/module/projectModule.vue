@@ -15,9 +15,11 @@ const { data, hasValue,formatDate } = useModule(props)
     </div>
     <div v-if="hasValue(data)" flex flex-col gap-1 class="module-body">
       <div flex gap-2 font-bold items-center>
-        <span v-if="data.organization">{{ data.organization }}</span>
-        <span v-if="data.project">{{ data.project }}</span>
-        <span v-if="data.role">{{ data.role }}</span>
+        <div flex gap-2 flex-wrap>
+          <span v-if="data.organization">{{ data.organization }}</span>
+          <span v-if="data.project">{{ data.project }}</span>
+          <span v-if="data.role">{{ data.role }}</span>
+        </div>
         <span class="resume_preview_work_info_date" v-if="data.workDuring">
           {{formatDate(data.workDuring[0])}} - {{ formatDate(data.workDuring[1]) }}
         </span>
@@ -31,9 +33,11 @@ const { data, hasValue,formatDate } = useModule(props)
     </div>
     <div v-else class="example module-body" flex flex-col gap-1>
       <div flex gap-2 font-bold items-center>
-        <span>腾讯大学</span>
-        <span>“最亮的明天”暖灯行动</span>
-        <span>项目负责人</span>
+        <div flex gap-2 flex-wrap>
+          <span>腾讯大学</span>
+          <span>“最亮的明天”暖灯行动</span>
+          <span>项目负责人</span>
+        </div>
         <span class="resume_preview_work_info_date">2018.9 - 2020.3</span>
       </div>
       <div>引导释放邮箱空间，帮助贫困山区</div>
