@@ -10,6 +10,11 @@ export interface Tool {
   redirectFrom?: string[]
   isNew: boolean
   createdAt?: Date
+  children?: {
+    name: string,
+    path: string,
+    component: () => Promise<Component>
+  }[]
 }
 
 export interface ToolCategory {

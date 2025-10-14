@@ -91,6 +91,7 @@ import { tool as imageEditor } from './image-editor';
 import { tool as linuxCommand } from './linux-command';
 import { tool as watermark } from './watermark';
 import { tool as imagePatina } from './image-patina';
+import { tool as noteBook } from './note-book';
 
 export const toolsByCategory: ToolCategory[] = [
   {
@@ -239,7 +240,8 @@ export const toolsByCategory: ToolCategory[] = [
       // stringObfuscator,
       textDiff,
       marquee,
-      resume
+      resume,
+      noteBook
     ],
   }
 ];
