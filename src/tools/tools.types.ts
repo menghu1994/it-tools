@@ -10,6 +10,7 @@ export interface Tool {
   redirectFrom?: string[]
   isNew: boolean
   createdAt?: Date
+  meta?: Record<string, any>
   children?: {
     name: string,
     path: string,

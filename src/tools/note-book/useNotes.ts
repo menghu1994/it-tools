@@ -1,9 +1,10 @@
 import { ref, computed, watchEffect } from 'vue';
-import axios from 'axios';
+import {noteService} from '@/api/note/note.service';
+import {categoryService} from '@/api/note/category.service';
 
 export interface Note {
   id?: string;
-  noteName: string;
+  title: string;
   content: string;
   category?: string;
 }
@@ -23,30 +24,28 @@ export function useNotes() {
 
   watchEffect(() => {
     filterNotes.value = notes.value.filter(note =>
-      note.noteName.toLowerCase().includes(searchNoteTitle.value.toLowerCase())
+      note.title.toLowerCase().includes(searchNoteTitle.value.toLowerCase())
     );
   });
 
-  // --- Mock backend calls ---
   const fetchNotes = async () => {
-    const { data } = await axios.get('/api/notes');
+    const { data } = await noteService.query();
     notes.value = data;
   };
 
   const fetchCategories = async () => {
-    const { data } = await axios.get('/api/categories');
+    const { data } = await categoryService.query();
     cateGorys.value = data;
   };
 
   const addNote = async (note: Note) => {
-    const exists = notes.value.find(n => n.noteName === note.noteName);
+    const exists = notes.value.find(n => n.title === note.title);
     if (exists) {
-      // update existing note
       exists.content = note.content;
       exists.category = note.category;
-      await axios.put(`/api/notes/${exists.id}`, exists);
+      await noteService.update(exists.id!, exists);
     } else {
-      const { data } = await axios.post('/api/notes', note);
+      const { data } = await noteService.create(note);
       notes.value.push(data);
     }
   };
@@ -54,14 +53,15 @@ export function useNotes() {
   const deleteNote = async (noteIndex: number) => {
     const curIndex = (page.value - 1) * itemPerPage + noteIndex;
     const note = notes.value[curIndex];
-    await axios.delete(`/api/notes/${note.id}`);
+    await noteService.delete(note.id!);
     notes.value.splice(curIndex, 1);
   };
 
   const addCategory = async (cate: string) => {
     if (!cate || cateGorys.value.includes(cate)) return;
     cateGorys.value.push(cate);
-    await axios.post('/api/categories', { name: cate });
+    // await axios.post('/api/categories', { name: cate });
+    await categoryService.create({ name: cate });
   };
 
   const deleteCategory = async (cate: string) => {
@@ -69,7 +69,8 @@ export function useNotes() {
     notes.value.forEach(note => {
       if (note.category === cate) note.category = '未分类';
     });
-    await axios.delete(`/api/categories/${cate}`);
+    // await axios.delete(`/api/categories/${cate}`);
+    await categoryService.delete(cate);
   };
 
   const getCateLength = (cate: string) =>

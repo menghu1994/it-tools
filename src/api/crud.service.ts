@@ -31,7 +31,7 @@ export default class CrudService {
     });
   }
 
-  update(id: number, params: any) {
+  update(id: number | string, params: any) {
     return request({
       url: `${this.url}/${id}`,
       method: 'PUT',
@@ -39,7 +39,7 @@ export default class CrudService {
     });
   }
 
-  delete(id: number) {
+  delete(id: number | string) {
     return request({
         url: `${this.url}/${id}`,
         method: 'DELETE',

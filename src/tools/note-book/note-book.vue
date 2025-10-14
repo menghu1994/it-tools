@@ -1,89 +1,57 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useNotes, type Note } from './useNotes';
 import { DeleteOutlineRound, AddCircleOutlineTwotone, ArrowBackIosNewSharp } from '@vicons/material';
-// import htmlParser from 'prettier/plugins/html';
 import Editor from '@/tools/html-wysiwyg-editor/editor/editor.vue';
-import _, { add } from 'lodash';
 
-interface Note {
-  noteName: string,
-  content: string,
-  category?: string
-}
+const {
+  notes,
+  cateGorys,
+  searchNoteTitle,
+  showNotes,
+  totalPages,
+  page,
+  addNote,
+  deleteNote,
+  addCategory,
+  deleteCategory,
+  getCateLength,
+  fetchNotes,
+  fetchCategories
+} = useNotes();
 
 const showCateGoryItem = ref(false);
-const cateGorys = ref(['未分类', '日记', '书签'])
+const cateGorysSource = ref<Note[]>([]);
+const curNote = ref<Note>({ title: '', content: '', category: '未分类' });
 
-const searchNoteTitle = ref<string>('');
-const curNote = ref<Note>({ noteName: '', content: '', category: '未分类' });
+onMounted(() => {
+  fetchNotes();
+  fetchCategories();
+});
 
-const cateGorysSource = ref<Note[]>([])
-const notes = ref<Note[]>([])
-
-const page = ref(1);
-const itemPerPage = 10;
-
-const filterNotes = ref<Note[]>([]);
-const showNotes = computed(() => filterNotes.value.slice((page.value - 1) * itemPerPage, page.value * itemPerPage))
-const totalPages = computed(() => Math.ceil(filterNotes.value.length / itemPerPage));
-
-watchEffect(() => {
-  filterNotes.value = notes.value.filter(note => note.noteName.includes(searchNoteTitle.value));
-})
-
-const getCateLength = (cate: string) => {
-  return notes.value.filter(note => note.category === cate).length
-}
-
-const switchNotePage = ($event: any) => {
-  console.error($event)
-  return false
-}
+const switchNote = (note: Note) => {
+  curNote.value = { ...note };
+};
 
 const newNote = () => {
-  curNote.value = {
-    noteName: '',
-    content: '',
-    category: '未分类'
-  }
-}
+  curNote.value = { title: '', content: '', category: '未分类' };
+};
+
+const saveNote = async () => {
+  await addNote(curNote.value);
+  curNote.value = { title: '', content: '', category: '未分类' };
+  await fetchNotes();
+};
 
 const onShowCategory = (cate: string) => {
-  const filterNotes = notes.value.filter(note => note.category === cate);
-  if (filterNotes.length === 0) {
-    return;
-  }
+  cateGorysSource.value = notes.value.filter(note => note.category === cate);
   showCateGoryItem.value = true;
-  cateGorysSource.value = filterNotes;
-}
-
-const switchNote = ($event: Note) => {
-  curNote.value = {
-    noteName: $event.noteName,
-    content: $event.content,
-    category: $event.category
-  }
-}
-
-const removeNote = (noteIndex: number) => {
-  const curIndex = (page.value - 1) * itemPerPage + noteIndex;
-  notes.value.splice(curIndex, 1);
-}
-
-const saveNote = () => {
-  notes.value.push({ ...curNote.value! });
-  curNote.value = { noteName: '', content: '', category: '未分类' };
-}
-
-const deleteCategory = (category: string, cateIndex: number) => {
-  notes.value.filter(note => note.category === category)?.forEach(note => note.category = '未分类');
-  cateGorys.value.splice(cateIndex, 1);
-}
-
-// const formattedHtml = asyncComputed(() => format(html.value, { parser: 'html', plugins: [htmlParser] }), '');
+};
 </script>
 
 <template>
   <div flex gap-2 justify-center class="w-full">
+    <!-- 左侧分类/列表 -->
     <c-card style="width: 300px;">
       <n-tabs type="line" animated class="h-full" :pane-wrapper-style="{ height: '100%' }">
 
@@ -95,10 +63,10 @@ const deleteCategory = (category: string, cateIndex: number) => {
                 <div v-for="(note, noteIndex) in showNotes" flex justify-between items-center gap-2 class="note-item">
                   <n-ellipsis :line-clamp="1" flex-1 cursor-pointer>
                     <span @click="switchNote(note)">
-                      {{ note.noteName }}
+                      {{ note.title }}
                     </span>
                   </n-ellipsis>
-                  <c-button circle @click="removeNote(noteIndex)">
+                  <c-button circle @click="deleteNote(noteIndex)">
                     <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
                   </c-button>
                 </div>
@@ -106,37 +74,37 @@ const deleteCategory = (category: string, cateIndex: number) => {
             </div>
             <div flex justify-between items-center>
               <span>共 {{ notes.length }} 篇</span>
-              <n-pagination v-model:page="page" :page-count="totalPages" simple
-                @on-update:page="switchNotePage($event)" />
+              <n-pagination v-model:page="page" :page-count="totalPages" simple />
             </div>
           </div>
         </n-tab-pane>
 
         <n-tab-pane name="module" tab="分类">
           <template v-if="!showCateGoryItem">
-            <div v-for="(cate, cateIndex) in cateGorys" :key="cate" flex justify-between items-center cursor-pointer
+            <div v-for="cate in cateGorys" :key="cate" flex justify-between items-center cursor-pointer
               @click="onShowCategory(cate)" class="note-item">
               <div flex flex-col p-2 border-2px border-gray-300>
                 <span font-bold>{{ cate }}</span>
                 <span>{{ getCateLength(cate) }}篇记事</span>
               </div>
-              <c-button circle v-if="cate !== '未分类'" @click="deleteCategory(cate, cateIndex)">
+              <c-button circle v-if="cate !== '未分类'" @click.stop="deleteCategory(cate)">
                 <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
               </c-button>
             </div>
-            <c-button @click="addCategory">
+            <c-button @click="addCategory(prompt('请输入分类名') || '')">
               <n-icon :component="AddCircleOutlineTwotone" size="18"></n-icon>
               新增分类
             </c-button>
           </template>
+
           <div v-else flex flex-col gap-1>
             <c-button @click="showCateGoryItem = false;" mb2>
               <n-icon :component="ArrowBackIosNewSharp" size="18"></n-icon>
               返回
             </c-button>
             <div v-for="value in cateGorysSource" flex justify-between items-center class="note-item">
-              <n-ellipsis :line-clamp="1" flex-1 cursor-pointer >
-                <span @click="switchNote(value)">{{ value.noteName }}</span>
+              <n-ellipsis :line-clamp="1" flex-1 cursor-pointer>
+                <span @click="switchNote(value)">{{ value.title }}</span>
               </n-ellipsis>
               <c-button circle>
                 <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
@@ -150,19 +118,19 @@ const deleteCategory = (category: string, cateIndex: number) => {
             <n-icon :component="AddCircleOutlineTwotone" size="18" circle></n-icon>
           </c-button>
         </template>
-
       </n-tabs>
     </c-card>
+
+    <!-- 右侧编辑区 -->
     <c-card style="width: 700px;">
       <div flex justify-between items-center>
-        <c-input-text v-model:value="curNote.noteName" placeholder="标题" style="width: 300px;" />
+        <c-input-text v-model:value="curNote.title" placeholder="标题" style="width: 300px;" />
         <div flex gap-2 items-center>
-          <c-select  v-model:value="curNote.category" searchable :options="cateGorys" />
-          <c-button :disabled="!curNote?.noteName" @click="saveNote">保存</c-button>
+          <c-select v-model:value="curNote.category" searchable :options="cateGorys" placeholder="选择分类"/>
+          <c-button :disabled="!curNote?.title" @click="saveNote">保存</c-button>
         </div>
       </div>
-      <Editor v-model:html="curNote.content"/>
-      <!-- <TextareaCopyable :value="formattedHtml" language="html" /> -->
+      <Editor v-model:html="curNote.content" />
     </c-card>
   </div>
 </template>
@@ -174,7 +142,7 @@ const deleteCategory = (category: string, cateIndex: number) => {
 
   &:hover {
     background-color: #f5f5f5;
-    color: #333
+    color: #333;
   }
 }
 </style>

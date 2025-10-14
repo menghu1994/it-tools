@@ -4,61 +4,129 @@ import { userService } from '@/api/auth/user.service';
 import { useUserStore } from '@/stores/user.store';
 import { ref, toRefs } from 'vue';
 import { useLoginModalStore } from '@/stores/login-modal.store'
+import type { FormInst, FormItemInst, FormItemRule } from 'naive-ui';
 
 const userStore = useUserStore();
 const modalStore = useLoginModalStore()
 const { user } = toRefs(userStore);
 const loading = ref(false)
 
-const form = ref({
+const loginForm = ref({
+  username: '',
+  password: '',
+})
+
+const registForm = ref({
   username: '',
   password: '',
   rePassword: '',
   email: ''
 })
 
-const formRules = {
-  username: [{ message: '用户名不能为空', validator: (value: string) => value !== '' }],
-  password: [{ message: '密码不能为空', validator: (value: string) => value !== '' }],
-  rePassword: [{ message: '密码不一致', validator: (value: string) => value === form.value.password }],
-  email: [{ message: '邮箱不能为空', validator: (value: string) => value !== '' }],
+const loginFormRef = ref<FormInst | null>(null)
+const registFormRef = ref<FormInst | null>(null)
+const rPasswordFormItemRef = ref<FormItemInst | null>(null)
+
+const loginRules = {
+  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户昵称' },
+  password: { required: true, trigger: ['input', 'blur'], message: '请输入密码' },
+}
+
+const registRules = {
+  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户昵称' },
+  password: { required: true, trigger: ['input', 'blur'], message: '请输入密码' },
+  rePassword: [
+    {
+      required: true,
+      message: '请再次输入密码',
+      trigger: ['input', 'blur']
+    },
+    {
+      validator: validatePasswordStartWith,
+      message: '两次密码输入不一致',
+      trigger: 'input'
+    },
+    {
+      validator: validatePasswordSame,
+      message: '两次密码输入不一致',
+      trigger: ['blur', 'password-input']
+    }
+  ],
+  email: { required: true, trigger: ['input', 'blur'], message: '请输入邮箱' },
 }
 
 watch(() => modalStore.show, (value) => {
   if (value) {
-    form.value = {
+    loginForm.value = {
       username: '',
-      password: '',
-      rePassword: '',
-      email: ''
+      password: ''
     }
   }
 })
 
-const login = async () => {
+const login = () => {
   loading.value = true;
-  const res = await authService.login({
-    username: form.value.username,
-    password: form.value.password,
-    withoutCaptcha: true
-  });
-  user.value = res.data;
-  loading.value = false;
-  modalStore.close()
+  loginFormRef.value?.validate(async (errors) => {
+    if (!errors) {
+      try {
+        const res = await authService.login({
+          username: loginForm.value.username,
+          password: loginForm.value.password,
+          withoutCaptcha: true
+        });
+        user.value = res.data;
+        modalStore.successLogin()
+      } catch (error) {
+        console.error('登录失败')
+      }
+    }
+    loading.value = false;
+  })
 }
 
-const regist = async () => {
+const regist = () => {
   loading.value = true;
-  const { rePassword, ...formData } = form.value;
-  const res = await userService.create(formData);
-  user.value = res.data;
+  registFormRef.value?.validate(async (errors) => {
+    if (!errors) {
+      try {
+        const { rePassword, ...formData } = registForm.value;
+        const res = await userService.create(formData);
+        user.value = res.data;
+        modalStore.successLogin()
+      } catch (error) {
+        console.error('注册失败')
+      }
+    }
+    loading.value = false;
+  })
+}
+
+function handlePasswordInput() {
+  if (registForm.value.rePassword) {
+    rPasswordFormItemRef.value?.validate({ trigger: 'password-input' })
+  }
+}
+
+function validatePasswordStartWith(rule: FormItemRule, value: string): boolean {
+  return (
+    !!registForm.value.password
+    && registForm.value.password.startsWith(value)
+    && registForm.value.password.length >= value.length
+  )
+}
+
+function validatePasswordSame(rule: FormItemRule, value: string): boolean {
+  return value === registForm.value.password
+}
+
+const closeModal = () => {
   loading.value = false;
-  modalStore.close()
 }
 </script>
 
 <template>
-  <c-modal v-if="!user" v-model:open="modalStore.show" shadow-xl important:max-w-512px important:pa-0px>
+  <c-modal v-if="!user" v-model:open="modalStore.show" @on-after-leave="closeModal" shadow-xl important:max-w-512px
+    important:pa-0px>
     <div class="wrapper">
       <div class="login-wrap">
         <div class="login-html">
@@ -69,26 +137,36 @@ const regist = async () => {
           <div class="login-form">
             <div class="sign-in-htm">
               <h1>Welcome</h1>
-              <form class="form" @submit.prevent="login">
-                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名"
-                  raw-text mb-2 />
-                <c-input-text v-model:value="form.password" :validation-rules="formRules.password" placeholder="密码"
-                  raw-text mb-2 />
-                <c-button w-full :disabled="loading">登录</c-button>
-              </form>
+              <n-form class="form" :model="loginForm" :rules="loginRules" :disabled="loading" ref="loginFormRef"
+                label-placement="left">
+                <n-form-item path="username">
+                  <n-input v-model:value="loginForm.username" placeholder="用户名" />
+                </n-form-item>
+                <n-form-item path="password">
+                  <n-input v-model:value="loginForm.password" placeholder="密码" />
+                </n-form-item>
+                <c-button w-full :disabled="loading" @click.prevent="login" attr-type="button">登录</c-button>
+              </n-form>
             </div>
             <div class="sign-up-htm">
-              <form class="form" @submit.prevent="regist">
-                <c-input-text v-model:value="form.username" :validation-rules="formRules.username" placeholder="用户名"
-                  raw-text mb-2 />
-                <c-input-text v-model:value="form.password" :validation-rules="formRules.password" placeholder="密码"
-                  type="password" raw-text mb-2 />
-                <c-input-text v-model:value="form.rePassword" :validation-rules="formRules.rePassword"
-                  placeholder="再次输入密码" type="password" raw-text mb-2 />
-                <c-input-text v-model:value="form.email" :validation-rules="formRules.password" placeholder="邮箱"
-                  raw-text mb-2 />
-                <c-button w-full :disabled="loading">注册</c-button>
-              </form>
+              <n-form class="form" :model="registForm" :rules="registRules" :disabled="loading" ref="registFormRef"
+                label-placement="left">
+                <n-form-item path="username">
+                  <n-input v-model:value="registForm.username" placeholder="用户名" />
+                </n-form-item>
+                <n-form-item path="password">
+                  <n-input v-model:value="registForm.password" type="password" @input="handlePasswordInput"
+                    @keydown.enter.prevent />
+                </n-form-item>
+                <n-form-item ref="rPasswordFormItemRef" first path="rePassword">
+                  <n-input v-model:value="registForm.rePassword" :disabled="!registForm.password" type="password"
+                    @keydown.enter.prevent />
+                </n-form-item>
+                <n-form-item path="email">
+                  <n-input v-model:value="registForm.email" placeholder="邮箱" />
+                </n-form-item>
+                <c-button w-full :disabled="loading" @click.prevent="regist" attr-type="button">注册</c-button>
+              </n-form>
             </div>
           </div>
         </div>

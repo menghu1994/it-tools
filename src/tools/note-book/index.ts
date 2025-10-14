@@ -9,5 +9,6 @@ export const tool = defineTool({
   component: () => import('./note-book.vue'),
   icon: Notebook,
   redirectFrom: ['/note-book'],
+  meta: { needLogin: true},
   children: []
 });
