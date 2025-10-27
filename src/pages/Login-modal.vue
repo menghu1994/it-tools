@@ -125,8 +125,8 @@ const closeModal = () => {
 </script>
 
 <template>
-  <c-modal v-if="!user" v-model:open="modalStore.show" @on-after-leave="closeModal" shadow-xl important:max-w-512px
-    important:pa-0px>
+  <c-modal v-if="!user" v-model:open="modalStore.show"
+  shadow-xl important:max-w-512px important:pa-0px>
     <div class="wrapper">
       <div class="login-wrap">
         <div class="login-html">

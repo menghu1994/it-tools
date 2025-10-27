@@ -55,7 +55,7 @@ import { tool as deviceInformation } from './device-information';
 import { tool as cypher } from './encryption';
 // import { tool as etaCalculator } from './eta-calculator';
 // import { tool as percentageCalculator } from './percentage-calculator';
-// import { tool as gitMemo } from './git-memo';
+import { tool as gitMemo } from './git-memo';
 import { tool as hashText } from './hash-text';
 import { tool as hmacGenerator } from './hmac-generator';
 import { tool as htmlEntities } from './html-entities';
@@ -168,7 +168,7 @@ export const toolsByCategory: ToolCategory[] = [
   {
     name: '开发',
     components: [
-      // gitMemo,
+      gitMemo,
       // randomPortGenerator,
       jsonMinify,
       // sqlPrettify,
@@ -190,6 +190,12 @@ export const toolsByCategory: ToolCategory[] = [
       colorSpace,
       colorGradient,
       tableGenerator
+    ]
+  },
+  {
+    name: 'GSAP',
+    components: [
+
     ]
   },
   // {

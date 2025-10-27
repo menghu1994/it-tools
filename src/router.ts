@@ -5,7 +5,7 @@ import NotFound from './pages/404.page.vue';
 import { tools } from './tools';
 import { config } from './config';
 import { routes as demoRoutes } from './ui/demo/demo.routes';
-import { useLoginModalStore } from '@/stores/login-modal.store'
+import { useLoginModalStore } from '@/stores/login-modal.store';
 import { useUserStore } from '@/stores/user.store';
 
 const toolsRoutes = tools.map(({ path, name, component, ...config }) => ({
@@ -18,7 +18,7 @@ const toolsRoutes = tools.map(({ path, name, component, ...config }) => ({
 const toolsRedirectRoutes = tools
   .filter(({ redirectFrom }) => redirectFrom && redirectFrom.length > 0)
   .flatMap(
-    ({ path, redirectFrom }) => redirectFrom?.map(redirectSource => ({ path: redirectSource, redirect: path })) ?? [],
+    ({ path, redirectFrom }) => redirectFrom?.map((redirectSource) => ({ path: redirectSource, redirect: path })) ?? [],
   );
 
 const router = createRouter({
@@ -27,13 +27,15 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomePage
+      component: HomePage,
     },
     {
       path: '/about',
       name: 'about',
       component: () => import('./pages/About.vue'),
-      beforeEnter: (to, from, next) => {next()}
+      beforeEnter: (to, from, next) => {
+        next();
+      },
     },
     ...toolsRoutes,
     ...toolsRedirectRoutes,
@@ -48,9 +50,9 @@ router.beforeEach(async (to, from, next) => {
   if ((to.meta?.meta as any)?.needLogin && !userStore.user) {
     const result = await modalStore.open();
     if (result) {
-      next()
+      next();
     } else {
-      next(false)
+      next(false);
     }
   } else {
     next();
