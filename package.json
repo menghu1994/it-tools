@@ -1,5 +1,5 @@
 {
-  "name": "it-tools",
+  "name": "tools",
   "type": "module",
   "version": "0.0.1",
   "packageManager": "pnpm@9.11.0",
@@ -10,11 +10,10 @@
     "website",
     "tools",
     "frontend",
-    "tool",
-    "developer-tools"
+    "tool"
   ],
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite --host 0.0.0.0 --port 8811",
     "build": "vue-tsc --noEmit && cross-env NODE_OPTIONS=--max_old_space_size=4096 vite build",
     "generate-blog": "node generate-blog.js",
     "preview": "vite preview --port 5050",
