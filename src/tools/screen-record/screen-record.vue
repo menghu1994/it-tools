@@ -2,20 +2,23 @@
   <div class="" flex flex-col gap-2>
     <c-card title="屏幕录制">
       <n-form-item label="选择长宽比" label-placement="left" label-width="110" :show-feedback="false" mb-2>
-        <c-select v-model="aspectRatio" fullwidth :options="aspectRatioList" />
+        <c-select v-model:value="aspectRatio" fullwidth :options="aspectRatioList" />
       </n-form-item>
       <n-form-item label="选择帧率" label-placement="left" label-width="110" :show-feedback="false" mb-2>
-        <c-select v-model="frameRate" fullwidth :options="frameRateList" />
+        <c-select v-model:value="frameRate" fullwidth :options="frameRateList" />
       </n-form-item>
       <n-form-item label="选择分辨率" label-placement="left" label-width="110" :show-feedback="false" mb-2>
-        <c-select v-model="resolutions" fullwidth :options="resolutionsList" />
+        <c-select v-model:value="resolutions" fullwidth :options="resolutionsList" />
       </n-form-item>
       <n-form-item label="是否显示光标" label-placement="left" label-width="110" :show-feedback="false" mb-2>
-        <c-select v-model="cursor" fullwidth :options="cursorList" />
+        <c-select v-model:value="cursor" fullwidth :options="cursorList" />
       </n-form-item>
-      <c-button class="nya-btn" @click="recorde">
-        {{ mediaStream ? '停 止' : '开 始' }}
-      </c-button>
+      <div flex flex-row-reverse>
+        <c-button class="nya-btn" @click="recorde" type="primary">
+          {{ mediaStream ? '停 止' : '开 始' }}
+        </c-button>
+      </div>
+
     </c-card>
 
     <c-card v-show="mediaStream" title="实时预览">
@@ -31,11 +34,8 @@
         <li>选项设置不生效？Chrome 了解一下！</li>
         <li>
           无法使用？
-          <a
-            href="https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices/getDisplayMedia"
-            target="_blank"
-            rel="noopener noreferrer"
-          >点击</a>查询兼容性
+          <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices/getDisplayMedia" target="_blank"
+            rel="noopener noreferrer">点击</a>查询兼容性
         </li>
         <li>是的，不支持录制系统/麦克风音频。</li>
         <li>使用开源版本部署时请启用 SSL</li>
@@ -99,7 +99,7 @@ watch(mediaStream, (stream) => {
   }
 });
 
-function recorde() {
+function recorde () {
   if (mediaStream.value) {
     stop();
   } else {
@@ -107,7 +107,7 @@ function recorde() {
   }
 }
 
-async function start() {
+async function start () {
   mediaRecorder.value = null;
   mediaStream.value = null;
   recordeBlods.value = [];
@@ -121,11 +121,11 @@ async function start() {
     mediaRecorder.value.ondataavailable = handleDataAvailable;
     mediaRecorder.value.start();
   } catch (e) {
-    alert(`${e.name}: ${e.message}`); // Vue3里没有 this.$modal，改成 alert 或者全局modal
+    // alert(`${e.name}: ${e.message}`); // Vue3里没有 this.$modal，改成 alert 或者全局modal
   }
 }
 
-function stop() {
+function stop () {
   if (mediaStream.value) {
     let tracks = mediaStream.value.getTracks();
     tracks.forEach((track) => track.stop());
@@ -134,20 +134,20 @@ function stop() {
   }
 }
 
-function handleDataAvailable(event) {
+function handleDataAvailable (event) {
   if (event.data.size > 0) {
     recordeBlods.value.push(event.data);
     createPreviewVideo();
   }
 }
 
-function createPreviewVideo() {
+function createPreviewVideo () {
   const blob = new Blob(recordeBlods.value, { type: "video/webm" });
   recordeBlods.value = [];
   previewUrl.value = URL.createObjectURL(blob);
 }
 
-function getDisplayMediaOptions() {
+function getDisplayMediaOptions () {
   let videoConstraints = {};
 
   if (aspectRatio.value !== "default") {
@@ -188,5 +188,4 @@ function getDisplayMediaOptions() {
 }
 </script>
 
-<style lang="less">
-</style>
+<style lang="less"></style>

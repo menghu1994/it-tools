@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Plus } from '@vicons/tabler';
+import { Plus, CircleX } from '@vicons/tabler';
 
 const classes = ref([
   { uid: 1, name: '语文' },
@@ -14,6 +14,10 @@ const userInfo = ref({ id: 3 });
 let weekDays = ref(['周一', '周二', '周三', '周四', '周五', '周六', '周日']);
 const timePeriodDefine = ref(['上午', '下午', '课后服务']);
 const showWeekend = ref(true);
+
+const isModalOpen = ref(false);
+const statisticData = ref([]);
+
 
 watch(showWeekend, (val) => {
   weekDays.value = val ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] : ['周一', '周二', '周三', '周四', '周五'];
@@ -59,6 +63,10 @@ const addValue = () => {
   classes.value = [...classes.value, { uid: classes.value.length + 1, name: '新课程' }];
 }
 
+const removeValue = (index) => {
+  classes.value.splice(index, 1)
+}
+
 const getCourse = (day, sessionId) => {
   return courses.value[day]?.[sessionId];
 };
@@ -82,7 +90,7 @@ const onDrop = (e, targetDay, targetSessionId) => {
   e.preventDefault();
 
   const textData = e.dataTransfer.getData('text/application');
-  if (!textData) {return}
+  if (!textData) { return }
   let droppedItem;
   try {
     droppedItem = JSON.parse(textData);
@@ -126,7 +134,7 @@ const onDrop = (e, targetDay, targetSessionId) => {
       courses.value[targetDay] = {};
     }
     courses.value[targetDay][targetSessionId] = sourceCourse;
-    if(e.dataTransfer.effectAllowed === 'move') {
+    if (e.dataTransfer.effectAllowed === 'move') {
       delete courses.value[sourceDay][sourceSessionId];
     }
   }
@@ -147,6 +155,30 @@ const deleteCourse = () => {
   currentSessionId.value = undefined;
   showContextMenu.value = false;
 };
+
+const showStatisticDialog = () => {
+  isModalOpen.value = true;
+  getStatisticClasses()
+}
+
+const getStatisticClasses = () => {
+  let showWeekDayData = [];
+  for (const [key, value] of Object.entries(courses.value)) {
+    if(weekDays.value.includes(key)) {
+      showWeekDayData.push(value)
+    }
+  }
+  const weekDayData = showWeekDayData.map(item => Object.values(item)).reduce((total, cur) => [...total, ...cur], []);
+  const statisticMap = new Map();
+  weekDayData.forEach(item => {
+    if (statisticMap.has(item.name)) {
+      statisticMap.set(item.name, statisticMap.get(item.name) + 1);
+    } else {
+      statisticMap.set(item.name, 1)
+    }
+  })
+  statisticData.value = Array.from(statisticMap, ([name, classValue]) => ({ name, class: classValue }));
+}
 
 const exportTableToImage = () => {
   // Implementation for image export
@@ -257,11 +289,13 @@ document.addEventListener('click', () => {
 
 <template>
   <div class="w-full">
-    <div class="flex flex-row-reverse gap-2 mb-2">
-<!--      <button @click="exportTableToImage()">导出为图片</button>-->
-<!--      <button @click="exportTableToExcel()">导出为Excel</button>-->
-<!--      <button @click="printDOM('table-wrapper')">打印</button>-->
-      <n-switch v-model:value="showWeekend" :round="false" >
+    <div flex flex-row-reverse items-center gap-2 mb-2>
+      <c-button type="primary">保存</c-button>
+      <!--      <button @click="exportTableToImage()">导出为图片</button>-->
+      <!--      <button @click="exportTableToExcel()">导出为Excel</button>-->
+      <!--      <button @click="printDOM('table-wrapper')">打印</button>-->
+      <c-button @click="showStatisticDialog()">统计</c-button>
+      <n-switch v-model:value="showWeekend" :round="false">
         <template #checked> 显示周末 </template>
         <template #unchecked>隐藏周末</template>
       </n-switch>
@@ -270,14 +304,13 @@ document.addEventListener('click', () => {
       <div class="w-40 border p-2">
         <h3>可选课程</h3>
         <div class="flex flex-col gap-1">
-          <div v-for="element in classes"
-               :key="element.uid"
-               class="teacher-item border-2 p-2 bg-white rounded hover:bg-gray-100 text-center"
-               draggable="true"
-               @dragstart="onDragClassStart($event, element)">
+          <div v-for="(element, eleIndex) in classes" :key="element.uid"
+            class="teacher-item border-2 p-2 bg-white rounded hover:bg-gray-100 text-center" draggable="true"
+            @dragstart="onDragClassStart($event, element)">
             <span class="font-bold">
               {{ element.name }}
             </span>
+            <n-icon class="icon-suffix" :component="CircleX" depth="4" size="26" @click="removeValue(eleIndex)" />
           </div>
           <c-button @click="addValue">
             <n-icon :component="Plus" depth="3" mr-2 size="18" />
@@ -299,19 +332,19 @@ document.addEventListener('click', () => {
             <template v-for="(timePeriod, timePeriodIndex) in timePeriods" :key="timePeriodIndex">
               <template v-for="(session, i) in timePeriod" :key="session.id">
                 <tr>
-                  <td v-if="i === 0" class="time-cell" :rowspan="timePeriod.length">{{ timePeriodDefine[timePeriodIndex] }}</td>
+                  <td v-if="i === 0" class="time-cell" :rowspan="timePeriod.length">{{ timePeriodDefine[timePeriodIndex]
+                  }}</td>
                   <td class="session-time">{{ session.time }}</td>
                   <td v-for="day in weekDays" :key="day" class="course-cell cursor-pointer"
                     :class="{ 'my-course': getCourse(day, session.id)?.uid === userInfo.id }"
                     @contextmenu.prevent="onRightClick($event, day, session.id)">
                     <div v-if="getCourse(day, session.id)" class="h-full flex flex-col justify-center" draggable="true"
-                         @dragstart="(e) => onDragStart(e, day, session.id)"
-                         @drop="(e) => onDrop(e, day, session.id)"
-                         @dragover.prevent @dragenter.prevent>
+                      @dragstart="(e) => onDragStart(e, day, session.id)" @drop="(e) => onDrop(e, day, session.id)"
+                      @dragover.prevent @dragenter.prevent>
                       {{ getCourse(day, session.id).name }}
                     </div>
-                    <div v-else class="empty-slot h-full"
-                         @drop="(e) => onDrop(e, day, session.id)" @dragover.prevent @dragenter.prevent></div>
+                    <div v-else class="empty-slot h-full" @drop="(e) => onDrop(e, day, session.id)" @dragover.prevent
+                      @dragenter.prevent></div>
                   </td>
                 </tr>
               </template>
@@ -325,11 +358,17 @@ document.addEventListener('click', () => {
         :style="{ left: contextMenuPosition[0] + 'px', top: contextMenuPosition[1] + 'px' }">
         <div @click="deleteCourse">删除</div>
       </div>
+
+      <c-modal v-model:open="isModalOpen" class="palette-modal" shadow-xl important:max-w-650px important:pa-12px
+        @keydown="handleKeydown">
+        <c-table :data="statisticData" :headers="[{ key: 'name', label: '名称' }, { key: 'class', label: '课程数量' }]"
+          mb-2 />
+      </c-modal>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
 .custom-context-menu {
   position: fixed;
   background-color: #fff;
@@ -407,6 +446,14 @@ document.addEventListener('click', () => {
   background-color: white;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  position: relative;
+
+  .icon-suffix {
+    position: absolute;
+    right: 4px;
+    top: 6px;
+    cursor: pointer;
+  }
 }
 
 .teacher-item:hover {

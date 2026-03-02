@@ -26,9 +26,9 @@
           <img :src="resultsImg" alt="image" />
         </div>
       </div>
-      <c-button class="nya-btn" @click="download">
+      <!-- <c-button class="nya-btn" @click="download">
         {{ loading ? `${(progress / iterations * 100).toFixed(0)} %` : '保存' }}
-      </c-button>
+      </c-button> -->
     </c-card>
 
     <c-card title="说明">

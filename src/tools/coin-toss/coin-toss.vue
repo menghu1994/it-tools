@@ -9,7 +9,6 @@
     </div>
     <div flex flex-col gap-1 justify-center items-center>
       <button role="button" @click="flipCoin" :disabled="!hasEnd">开始</button>
-      <p >结果: <span ref="resultRef">{{ result }}</span></p>
       <div flex items-center gap-2>
         <p>累计</p>
         <p>正面: {{ frontCount }}</p>
@@ -26,8 +25,6 @@ import gsap from "gsap";
 
 const coin = ref<HTMLElement | null>(null);
 const shadow = ref<HTMLElement | null>(null);
-const resultRef = ref<HTMLElement | null>(null);
-const result = ref("");
 const frontCount = ref(0);
 const backCount = ref(0);
 const hasEnd = ref(true);
@@ -37,12 +34,6 @@ const flipCoin = () => {
   hasEnd.value = false;
 
   const isHeads = Math.random() > 0.5;
-  gsap.to(resultRef.value, {
-    opacity: 0,
-    duration: 0.2,
-    ease: "power2.out"
-  })
-  result.value = isHeads ? "正面" : "反面";
 
   const spins = Math.floor(Math.random() * 3) + 3; // 随机3~5圈
   const finalRotation = isHeads ? 0 : 180;
@@ -55,7 +46,7 @@ const flipCoin = () => {
 
   // 抛起
   tl.to(coin.value, {
-    y: -200, // 向上抛
+    y: -300, // 向上抛
     duration: 0.6,
     ease: "power2.out"
   }, 0);
@@ -97,11 +88,6 @@ const flipCoin = () => {
       backCount.value ++
     }
     hasEnd.value = true;
-    gsap.to(resultRef.value, {
-      opacity: 1,
-      duration: 1,
-      ease: "power2.out"
-    });
   })
 };
 </script>
@@ -111,8 +97,9 @@ const flipCoin = () => {
   perspective: 1200px;
   display: flex;
   flex-direction: column;
+  justify-content: end;
   align-items: center;
-  margin-top: 100px;
+  height: calc(100vh - 22rem);
 }
 
 .coin-wrapper {
