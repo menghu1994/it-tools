@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import draggable from 'vuedraggable';
 
 const teachers = ref([
@@ -12,6 +12,12 @@ const teachers = ref([
 const userInfo = ref({ id: 10 });
 const weekDays = ref(['周一', '周二', '周三', '周四', '周五', '周六', '周日']);
 const timePeriodDefine = ref(['上午', '下午', '课后服务']);
+const showWeekend = ref(true);
+const weekendFirst = ref(false);
+
+watchEffect(() => {
+  weekDays.value = showWeekend.value ? ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] ? weekendFirst.value : ['周日', '周一', '周二', '周三', '周四', '周五', '周六'] : ['周一', '周二', '周三', '周四', '周五'];
+})
 
 const timePeriods = ref([
   [
@@ -253,6 +259,12 @@ document.addEventListener('click', () => {
 
 <template>
   <div class="w-full">
+    <n-form-item label="显示周末">
+      <n-switch v-model:value="showWeekend" />
+    </n-form-item>
+    <n-form-item label="周末置前" v-if="showWeekend">
+      <n-switch v-model:value="weekendFirst" />
+    </n-form-item>
     <!-- <div class="flex flex-row-reverse gap-2 mb-2">
       <button @click="exportTableToImage()">导出为图片</button>
       <button @click="exportTableToExcel()">导出为Excel</button>
