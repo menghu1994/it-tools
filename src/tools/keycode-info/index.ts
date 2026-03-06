@@ -1,11 +1,11 @@
 import { Keyboard } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.keycode-info.title'),
+  name: '键盘信息',
   path: '/keycode-info',
-  description: translate('tools.keycode-info.description'),
+  description: '查找任何按下的键的javascript键代码、代码、位置和修饰符。',
   keywords: [
     'keycode',
     'info',

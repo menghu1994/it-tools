@@ -17,6 +17,16 @@ const editor = new Editor({
 
 editor.on('update', ({ editor }) => emit('update:html', editor.getHTML()));
 
+watch(
+  () => props.html,
+  (newHtml) => {
+    // 避免循环更新
+    if (newHtml !== editor.getHTML()) {
+      editor.commands.setContent(newHtml, false);
+    }
+  }
+);
+
 tryOnBeforeUnmount(() => {
   editor.destroy();
 });

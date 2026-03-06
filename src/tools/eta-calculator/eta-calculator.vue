@@ -1,9 +1,7 @@
 <script setup lang="ts">
-// Duplicate issue with sub directory
-
 import { addMilliseconds, formatRelative } from 'date-fns';
 
-import { enGB } from 'date-fns/locale';
+import { zhCN } from 'date-fns/locale';
 
 import { formatMsDuration } from './eta-calculator.service';
 
@@ -19,15 +17,14 @@ const durationMs = computed(() => {
   return unitCount.value / (unitPerTimeSpan.value / timeSpanMs);
 });
 const endAt = computed(() =>
-  formatRelative(addMilliseconds(startedAt.value, durationMs.value), Date.now(), { locale: enGB }),
+  formatRelative(addMilliseconds(startedAt.value, durationMs.value), Date.now(), { locale: zhCN }),
 );
 </script>
 
 <template>
   <div>
     <div text-justify op-70>
-      With a concrete example, if you wash 5 plates in 3 minutes and you have 500 plates to wash, it will take you 5
-      hours to wash them all.
+      举个具体的例子，如果你在 3 分钟内洗 5 个盘子，而你有 500 个盘子要洗，那么你需要 5 个小时才能洗完所有盘子。
     </div>
     <n-divider />
     <div flex gap-2>
@@ -49,11 +46,10 @@ const endAt = computed(() =>
           v-model:value="timeSpanUnitMultiplier"
           min-w-130px
           :options="[
-            { label: 'milliseconds', value: 1 },
-            { label: 'seconds', value: 1000 },
-            { label: 'minutes', value: 1000 * 60 },
-            { label: 'hours', value: 1000 * 60 * 60 },
-            { label: 'days', value: 1000 * 60 * 60 * 24 },
+            { label: '秒', value: 1000 },
+            { label: '分钟', value: 1000 * 60 },
+            { label: '小时', value: 1000 * 60 * 60 },
+            { label: '天', value: 1000 * 60 * 60 * 24 },
           ]"
         />
       </div>

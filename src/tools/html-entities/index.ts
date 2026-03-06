@@ -1,11 +1,11 @@
 import { Code } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.html-entities.title'),
+  name: '转义html实体',
   path: '/html-entities',
-  description: translate('tools.html-entities.description'),
+  description: '转义或unescape html实体（将<、>、&、“和\'替换为其html版本）',
   keywords: ['html', 'entities', 'escape', 'unescape', 'special', 'characters', 'tags'],
   component: () => import('./html-entities.vue'),
   icon: Code,

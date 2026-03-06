@@ -22,7 +22,7 @@ const theme = useThemeVars();
               'background-color': theme.primaryColor,
             }"
           >
-            {{ $t('toolCard.new') }}
+            新
           </div>
 
           <FavoriteButton :tool="tool" />

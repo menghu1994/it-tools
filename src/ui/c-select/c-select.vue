@@ -138,7 +138,7 @@ function onSearchInput() {
 </script>
 
 <template>
-  <c-label v-bind="props">
+  <c-label v-bind="props" w-full>
     <div ref="elementRef" relative class="c-select" w-full>
       <div
         flex flex-nowrap cursor-pointer items-center
@@ -156,7 +156,7 @@ function onSearchInput() {
               {{ selectedOption.label }}
             </span>
             <span v-else class="placeholder" lh-normal>
-              {{ placeholder ?? 'Select an option' }}
+              {{ placeholder ?? 'Select' }}
             </span>
           </slot>
         </div>

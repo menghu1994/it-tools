@@ -1,0 +1,53 @@
+# .github/workflows/deploy.yml
+name: Deploy to Server
+
+# 触发条件：当代码被推送到 main 分支时，自动运行这个工作流
+on:
+  push:
+    branches: [ "main" ]
+
+# 授予这个工作流的权限，允许它写入仓库内容（比如推送到gh-pages分支）
+permissions:
+  contents: write
+
+#  jobs 定义了这个工作流要执行的一系列任务
+jobs:
+  # 一个名为 build-and-deploy 的任务
+  build-and-deploy:
+    # 这个任务运行在最新的 Ubuntu 系统上
+    runs-on: ubuntu-latest
+
+    # 步骤集合
+    steps:
+      # 步骤1: 拉取代码（GitHub Actions 已经帮我们准备好了这个动作）
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 步骤2: 设置 Node.js 环境
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # 指定你项目使用的Node版本
+          cache: 'npm'
+
+      # 步骤3: 安装依赖 (CI 环节)
+      - name: Install dependencies
+        run: npm ci # 使用ci命令比install更严格，适合自动化环境
+
+      # 步骤4: 打包构建 (CI 环节)
+      - name: Build project
+        run: npm run build # 这会运行你package.json里的build脚本，生成dist文件夹
+
+      # 步骤5: 部署到 GitHub Pages (CD 环节)
+      - name: Deploy to GitHub Pages
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }} # 你的服务器IP
+          username: ${{ secrets.SERVER_USER }} # 登录用户名
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # SSH私钥
+          # 这一串命令的意思是：清空服务器上的旧网站文件，把新的dist文件夹传上去
+          script: |
+            rm -rf /usr/share/nginx/html/*
+            scp -r ./dist/* your_username@your_server_ip:/usr/share/nginx/html/
+            sudo systemctl restart nginx # 重启nginx
+            

@@ -29,7 +29,7 @@ function handleFileUpload(file: File) {
 
 <template>
   <div>
-    <c-file-upload :title="$t('tools.bookmark.fileUpload')" @file-upload="handleFileUpload"
+    <c-file-upload title="上传从浏览器中下载书签文件" @file-upload="handleFileUpload"
       :accept="'.html'" />
 
     <div v-if="bookmarkTree.length > 0">

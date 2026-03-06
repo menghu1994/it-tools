@@ -62,39 +62,39 @@ export const tool = defineTool({
 );
 
 createToolFile(`${toolName}.service.ts`, ``);
-createToolFile(
-  `${toolName}.service.test.ts`,
-  `
-import { expect, describe, it } from 'vitest';
-// import { } from './${toolName}.service';
+// createToolFile(
+//   `${toolName}.service.test.ts`,
+//   `
+// import { expect, describe, it } from 'vitest';
+// // import { } from './${toolName}.service';
+// //
+// // describe('${toolName}', () => {
+// //
+// // })
+// `,
+// );
+
+// createToolFile(
+//   `${toolName}.e2e.spec.ts`,
+//   `
+// import { test, expect } from '@playwright/test';
 //
-// describe('${toolName}', () => {
+// test.describe('Tool - ${toolNameTitleCase}', () => {
+//   test.beforeEach(async ({ page }) => {
+//     await page.goto('/${toolName}');
+//   });
 //
-// })
-`,
-);
-
-createToolFile(
-  `${toolName}.e2e.spec.ts`,
-  `
-import { test, expect } from '@playwright/test';
-
-test.describe('Tool - ${toolNameTitleCase}', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/${toolName}');
-  });
-
-  test('Has correct title', async ({ page }) => {
-    await expect(page).toHaveTitle('${toolNameTitleCase} - IT Tools');
-  });
-
-  test('', async ({ page }) => {
-
-  });
-});
-  
-`,
-);
+//   test('Has correct title', async ({ page }) => {
+//     await expect(page).toHaveTitle('${toolNameTitleCase} - IT Tools');
+//   });
+//
+//   test('', async ({ page }) => {
+//
+//   });
+// });
+//
+// `,
+// );
 
 const toolsIndex = join(toolsDir, 'index.ts');
 const indexContent = await readFile(toolsIndex, { encoding: 'utf-8' }).then((r) => r.split('\n'));

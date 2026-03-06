@@ -1,11 +1,11 @@
 import { World } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
+
 
 export const tool = defineTool({
-  name: translate('tools.mime-types.title'),
+  name: 'mime类型',
   path: '/mime-types',
-  description: translate('tools.mime-types.description'),
+  description: '将mime类型转换为扩展，反之亦然。',
   keywords: ['mime', 'types', 'extension', 'content', 'type'],
   component: () => import('./mime-types.vue'),
   icon: World,

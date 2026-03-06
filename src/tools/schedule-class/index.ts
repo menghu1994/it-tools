@@ -1,11 +1,10 @@
 import { BellRinging } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: 'ScheduleClass',
+  name: '排课',
   path: '/schedule-class',
-  description: translate('tools.schedule-class.description'),
+  description: '课程编辑器',
   keywords: ['schedule', 'web', 'class', 'custom'],
   component: () => import('./schedule-class.vue'),
   icon: BellRinging,

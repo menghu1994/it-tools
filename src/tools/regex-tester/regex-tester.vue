@@ -101,9 +101,9 @@ watchEffect(
         rows="3"
         :validation="regexValidation"
       />
-      <router-link target="_blank" to="/regex-memo" mb-1 mt-1>
-        See Regular Expression Cheatsheet
-      </router-link>
+<!--      <router-link target="_blank" to="/regex-memo" mb-1 mt-1>-->
+<!--        See Regular Expression Cheatsheet-->
+<!--      </router-link>-->
       <n-space>
         <n-checkbox v-model:checked="global">
           <span title="Global search">Global search. (<code>g</code>)</span>
