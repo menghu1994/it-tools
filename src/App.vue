@@ -5,6 +5,7 @@ import { darkThemeOverrides, lightThemeOverrides } from './themes';
 import { layouts } from './layouts';
 import { useStyleStore } from './stores/style.store';
 import { zhCN, dateZhCN } from 'naive-ui'
+import AuthModal from './pages/auth/AuthModal.vue'
 
 const route = useRoute();
 const layout = computed(() => route?.meta?.layout ?? layouts.base);
@@ -20,6 +21,8 @@ const themeOverrides = computed(() => (styleStore.isDarkTheme ? darkThemeOverrid
     <NGlobalStyle />
     <NMessageProvider placement="bottom">
       <NNotificationProvider placement="bottom-right">
+
+    <AuthModal />
         <component :is="layout">
           <RouterView />
         </component>
