@@ -145,14 +145,16 @@ const closeModal = () => {
                 <n-form-item path="password">
                   <n-input v-model:value="loginForm.password" placeholder="密码" />
                 </n-form-item>
-                <c-button w-full :disabled="loading" @click.prevent="login" attr-type="button">登录</c-button>
+                <c-button w-full :disabled="loading" @click.prevent="login" attr-type="button">
+                   {{ loading ? '登录中...' : '登录' }}
+                </c-button>
               </n-form>
             </div>
             <div class="sign-up-htm">
               <n-form class="form" :model="registForm" :rules="registRules" :disabled="loading" ref="registFormRef"
                 label-placement="left">
                 <n-form-item path="username">
-                  <n-input v-model:value="registForm.username" placeholder="用户名" />
+                  <n-input v-model:value="registForm.username" placeholder="请输入用户名" />
                 </n-form-item>
                 <n-form-item path="password">
                   <n-input v-model:value="registForm.password" type="password" @input="handlePasswordInput"
@@ -165,7 +167,9 @@ const closeModal = () => {
                 <n-form-item path="email">
                   <n-input v-model:value="registForm.email" placeholder="邮箱" />
                 </n-form-item>
-                <c-button w-full :disabled="loading" @click.prevent="regist" attr-type="button">注册</c-button>
+                <c-button w-full :disabled="loading" @click.prevent="regist" attr-type="button">
+                  {{ loading ? '注册中...' : '注册' }}
+                </c-button>
               </n-form>
             </div>
           </div>
