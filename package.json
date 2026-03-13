@@ -85,7 +85,8 @@
     "vuedraggable": "^4.1.0",
     "xml-formatter": "^3.3.2",
     "xml-js": "^1.6.11",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.1",
+    "exifreader": "^4.37.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",

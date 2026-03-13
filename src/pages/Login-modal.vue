@@ -145,6 +145,7 @@ const closeModal = () => {
                 <n-form-item path="password">
                   <n-input v-model:value="loginForm.password" placeholder="密码" />
                 </n-form-item>
+                <span>忘记密码</span>
                 <c-button w-full :disabled="loading" @click.prevent="login" attr-type="button">登录</c-button>
               </n-form>
             </div>
