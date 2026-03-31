@@ -80,7 +80,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue';
-import ExifReader from 'exifreader';
+//import ExifReader from 'exifreader';
 
 const options = ref({
   fontSize: 13,
@@ -161,20 +161,20 @@ async function getImageExif(file) {
       });
 
       // 解析 EXIF 数据
-      const tags = ExifReader.load(arrayBuffer);
+      // const tags = ExifReader.load(arrayBuffer);
       
       // 获取拍摄时间（优先取 DateTimeOriginal，备用 CreateDate）
       let shootTime = '';
-      if (tags.DateTimeOriginal) {
-        shootTime = tags.DateTimeOriginal.value;
-      } else if (tags.CreateDate) {
-        shootTime = tags.CreateDate.value;
-      }
+      // if (tags.DateTimeOriginal) {
+      //   shootTime = tags.DateTimeOriginal.value;
+      // } else if (tags.CreateDate) {
+      //   shootTime = tags.CreateDate.value;
+      // }
 
-      // 格式化时间：YYYY:MM:DD HH:MM:SS → YYYY-MM-DD HH:MM:SS
-      if (shootTime) {
-        shootTime = shootTime.replace(/:/g, '-', 2); // 仅替换前两个冒号
-      }
+      // // 格式化时间：YYYY:MM:DD HH:MM:SS → YYYY-MM-DD HH:MM:SS
+      // if (shootTime) {
+      //   shootTime = shootTime.replace(/:/g, '-', 2); // 仅替换前两个冒号
+      // }
 
       resolve({ shootTime });
     } catch (error) {
