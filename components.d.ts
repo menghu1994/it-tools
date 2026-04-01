@@ -17,6 +17,7 @@ declare module '@vue/runtime-core' {
     Base64StringConverter: typeof import('./src/tools/base64-string-converter/base64-string-converter.vue')['default']
     BasicAuthGenerator: typeof import('./src/tools/basic-auth-generator/basic-auth-generator.vue')['default']
     Bcrypt: typeof import('./src/tools/bcrypt/bcrypt.vue')['default']
+    BeadPattern: typeof import('./src/tools/bead-pattern/bead-pattern.vue')['default']
     BenchmarkBuilder: typeof import('./src/tools/benchmark-builder/benchmark-builder.vue')['default']
     Bip39Generator: typeof import('./src/tools/bip39-generator/bip39-generator.vue')['default']
     BlogView: typeof import('./src/blog/blog-view.vue')['default']
