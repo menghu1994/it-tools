@@ -11,15 +11,15 @@ const { tool } = toRefs(props);
 const isFavorite = computed(() => toolStore.isToolFavorite({ tool }));
 const buttonType = computed(() => (isFavorite.value ? 'primary' : 'default'));
 
-function toggleFavorite(event: MouseEvent) {
+async function toggleFavorite(event: MouseEvent) {
   event.preventDefault();
 
   if (toolStore.isToolFavorite({ tool })) {
-    toolStore.removeToolFromFavorites({ tool });
+    await toolStore.removeToolFromFavorites({ tool });
     return;
   }
 
-  toolStore.addToolToFavorites({ tool });
+  await toolStore.addToolToFavorites({ tool });
 }
 </script>
 

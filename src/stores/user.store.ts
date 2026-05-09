@@ -3,11 +3,16 @@ import { authService } from '@/api/auth/auth.service';
 import { useStorage } from '@vueuse/core';
 import type { Ref } from 'vue';
 
-interface IUser {
+export interface IUser {
   _id: string;
   name: string;
   nickname?: string;
   username?: string;
+  email?: string;
+  avatar?: string;
+  coinBalance?: number;
+  roles?: any[];
+  favoriteTools?: string[];
 }
 
 export const useUserStore = defineStore('user', {
@@ -19,7 +24,8 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     async fetchMe() {
-      this.user = await authService.getAccount();
+      const res = await authService.getAccount();
+      this.user = res.data;
     }
   },
 });

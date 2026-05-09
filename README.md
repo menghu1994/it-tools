@@ -15,6 +15,8 @@ docker run -d --name it-tools --restart unless-stopped -p 8080:80 ghcr.io/corent
 pnpm run script:create:tool my-tool-name
 ```
 
+[组件](https://www.naiveui.com/zh-CN/os-theme/components/button)
+
 ## License
 
 This project is under the [GNU GPLv3](LICENSE).

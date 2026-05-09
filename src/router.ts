@@ -7,6 +7,7 @@ import { config } from './config';
 import { routes as demoRoutes } from './ui/demo/demo.routes';
 import { useLoginModalStore } from '@/stores/login-modal.store';
 import { useUserStore } from '@/stores/user.store';
+import { itToolsService } from '@/api/it-tools.service';
 
 const toolsRoutes = tools.map(({ path, name, component, ...config }) => ({
   path,
@@ -37,6 +38,16 @@ const router = createRouter({
         next();
       },
     },
+    {
+      path: '/user',
+      name: 'user',
+      component: () => import('./pages/User.page.vue'),
+    },
+    {
+      path: '/admin/tool-quotas',
+      name: 'admin-tool-quotas',
+      component: () => import('./pages/AdminToolQuotas.page.vue'),
+    },
     ...toolsRoutes,
     ...toolsRedirectRoutes,
     ...(config.app.env === 'development' ? demoRoutes : []),
@@ -44,14 +55,44 @@ const router = createRouter({
   ],
 });
 
+async function enterToolRoute(path: string, userStore: ReturnType<typeof useUserStore>) {
+  const res = await itToolsService.enterTool(path);
+  if (res.data?.user) {
+    userStore.user = res.data.user;
+  }
+}
+
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   const modalStore = useLoginModalStore();
-  if ((to.meta?.meta as any)?.needLogin && !userStore.user) {
+  if (((to.meta?.meta as any)?.needLogin || to.meta?.isTool || to.name === 'user' || to.name === 'admin-tool-quotas') && !userStore.user) {
     const result = await modalStore.open();
     if (result) {
+      if (to.meta?.isTool) {
+        try {
+          await enterToolRoute(to.path, userStore);
+        } catch (error: any) {
+          if (error?.response?.status === 402) {
+            next('/user');
+            return;
+          }
+          next(false);
+          return;
+        }
+      }
       next();
     } else {
+      next(false);
+    }
+  } else if (to.meta?.isTool && userStore.user) {
+    try {
+      await enterToolRoute(to.path, userStore);
+      next();
+    } catch (error: any) {
+      if (error?.response?.status === 402) {
+        next('/user');
+        return;
+      }
       next(false);
     }
   } else {

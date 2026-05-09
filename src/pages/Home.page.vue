@@ -14,9 +14,13 @@ useHead({ title: 'Tools - Handy online tools' });
 
 const favoriteTools = computed(() => toolStore.favoriteTools);
 
+onMounted(() => {
+  toolStore.ensureUserFavoritesLoaded();
+});
+
 // Update favorite tools order when drag is finished
-function onUpdateFavoriteTools() {
-  toolStore.updateFavoriteTools(favoriteTools.value); // Update the store with the new order
+async function onUpdateFavoriteTools() {
+  await toolStore.updateFavoriteTools(favoriteTools.value);
 }
 </script>
 

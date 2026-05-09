@@ -1,70 +1,67 @@
 <script setup lang="ts">
 import { authService } from '@/api/auth/auth.service';
 import { userService } from '@/api/auth/user.service';
+import { setAuthTokens } from '@/api/request';
+import { useLoginModalStore } from '@/stores/login-modal.store';
 import { useUserStore } from '@/stores/user.store';
-import { ref, toRefs } from 'vue';
-import { useLoginModalStore } from '@/stores/login-modal.store'
+import { useToolStore } from '@/tools/tools.store';
 import type { FormInst, FormItemInst, FormItemRule } from 'naive-ui';
 
 const userStore = useUserStore();
-const modalStore = useLoginModalStore()
+const toolStore = useToolStore();
+const modalStore = useLoginModalStore();
 const { user } = toRefs(userStore);
-const loading = ref(false)
+const loading = ref(false);
 
 const loginForm = ref({
   username: '',
   password: '',
-})
+});
 
 const registForm = ref({
   username: '',
   password: '',
   rePassword: '',
-  email: ''
-})
+  email: '',
+});
 
-const loginFormRef = ref<FormInst | null>(null)
-const registFormRef = ref<FormInst | null>(null)
-const rPasswordFormItemRef = ref<FormItemInst | null>(null)
+const loginFormRef = ref<FormInst | null>(null);
+const registFormRef = ref<FormInst | null>(null);
+const rPasswordFormItemRef = ref<FormItemInst | null>(null);
 
 const loginRules = {
-  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户昵称' },
+  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户名' },
   password: { required: true, trigger: ['input', 'blur'], message: '请输入密码' },
-}
+};
 
 const registRules = {
-  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户昵称' },
+  username: { required: true, trigger: ['input', 'blur'], message: '请输入用户名' },
   password: { required: true, trigger: ['input', 'blur'], message: '请输入密码' },
   rePassword: [
-    {
-      required: true,
-      message: '请再次输入密码',
-      trigger: ['input', 'blur']
-    },
-    {
-      validator: validatePasswordStartWith,
-      message: '两次密码输入不一致',
-      trigger: 'input'
-    },
-    {
-      validator: validatePasswordSame,
-      message: '两次密码输入不一致',
-      trigger: ['blur', 'password-input']
-    }
+    { required: true, message: '请再次输入密码', trigger: ['input', 'blur'] },
+    { validator: validatePasswordStartWith, message: '两次密码输入不一致', trigger: 'input' },
+    { validator: validatePasswordSame, message: '两次密码输入不一致', trigger: ['blur', 'password-input'] },
   ],
   email: { required: true, trigger: ['input', 'blur'], message: '请输入邮箱' },
-}
+};
 
 watch(() => modalStore.show, (value) => {
   if (value) {
-    loginForm.value = {
-      username: '',
-      password: ''
-    }
+    loginForm.value = { username: '', password: '' };
+    registForm.value = { username: '', password: '', rePassword: '', email: '' };
   }
-})
+});
 
-const login = () => {
+function normalizeLoginUser(data: any) {
+  return data?.userInfo || data;
+}
+
+function persistLogin(data: any) {
+  setAuthTokens(data);
+  user.value = normalizeLoginUser(data);
+}
+
+function login() {
   loading.value = true;
   loginFormRef.value?.validate(async (errors) => {
     if (!errors) {
@@ -72,38 +69,45 @@ const login = () => {
         const res = await authService.login({
           username: loginForm.value.username,
           password: loginForm.value.password,
-          withoutCaptcha: true
+          withoutCaptcha: true,
         });
-        user.value = res.data;
-        modalStore.successLogin()
+        persistLogin(res.data);
+        await toolStore.ensureUserFavoritesLoaded();
+        modalStore.successLogin();
       } catch (error) {
-        console.error('登录失败')
+        console.error('登录失败', error);
       }
     }
     loading.value = false;
-  })
+  });
 }
 
-const regist = () => {
+function regist() {
   loading.value = true;
   registFormRef.value?.validate(async (errors) => {
     if (!errors) {
       try {
         const { rePassword, ...formData } = registForm.value;
-        const res = await userService.create(formData);
-        user.value = res.data;
-        modalStore.successLogin()
+        await userService.create({ ...formData, name: formData.username });
+        const res = await authService.login({
+          username: formData.username,
+          password: formData.password,
+          withoutCaptcha: true,
+        });
+        persistLogin(res.data);
+        await toolStore.ensureUserFavoritesLoaded();
+        modalStore.successLogin();
       } catch (error) {
-        console.error('注册失败')
+        console.error('注册失败', error);
       }
     }
     loading.value = false;
-  })
+  });
 }
 
 function handlePasswordInput() {
   if (registForm.value.rePassword) {
-    rPasswordFormItemRef.value?.validate({ trigger: 'password-input' })
+    rPasswordFormItemRef.value?.validate({ trigger: 'password-input' });
   }
 }
 
@@ -112,21 +116,16 @@ function validatePasswordStartWith(rule: FormItemRule, value: string): boolean {
     !!registForm.value.password
     && registForm.value.password.startsWith(value)
     && registForm.value.password.length >= value.length
-  )
+  );
 }
 
 function validatePasswordSame(rule: FormItemRule, value: string): boolean {
-  return value === registForm.value.password
-}
-
-const closeModal = () => {
-  loading.value = false;
+  return value === registForm.value.password;
 }
 </script>
 
 <template>
-  <c-modal v-if="!user" v-model:open="modalStore.show"
-  shadow-xl important:max-w-512px important:pa-0px>
+  <c-modal v-if="!user" v-model:open="modalStore.show" shadow-xl important:max-w-512px important:pa-0px>
     <div class="wrapper">
       <div class="login-wrap">
         <div class="login-html">
@@ -137,31 +136,52 @@ const closeModal = () => {
           <div class="login-form">
             <div class="sign-in-htm">
               <h1>Welcome</h1>
-              <n-form class="form" :model="loginForm" :rules="loginRules" :disabled="loading" ref="loginFormRef"
-                label-placement="left">
+              <n-form
+                ref="loginFormRef"
+                class="form"
+                :model="loginForm"
+                :rules="loginRules"
+                :disabled="loading"
+                label-placement="left"
+              >
                 <n-form-item path="username">
                   <n-input v-model:value="loginForm.username" placeholder="用户名" />
                 </n-form-item>
                 <n-form-item path="password">
-                  <n-input v-model:value="loginForm.password" placeholder="密码" />
+                  <n-input v-model:value="loginForm.password" type="password" placeholder="密码" />
                 </n-form-item>
-                <span>忘记密码</span>
                 <c-button w-full :disabled="loading" @click.prevent="login" attr-type="button">登录</c-button>
               </n-form>
             </div>
             <div class="sign-up-htm">
-              <n-form class="form" :model="registForm" :rules="registRules" :disabled="loading" ref="registFormRef"
-                label-placement="left">
+              <n-form
+                ref="registFormRef"
+                class="form"
+                :model="registForm"
+                :rules="registRules"
+                :disabled="loading"
+                label-placement="left"
+              >
                 <n-form-item path="username">
                   <n-input v-model:value="registForm.username" placeholder="用户名" />
                 </n-form-item>
                 <n-form-item path="password">
-                  <n-input v-model:value="registForm.password" type="password" @input="handlePasswordInput"
-                    @keydown.enter.prevent />
+                  <n-input
+                    v-model:value="registForm.password"
+                    type="password"
+                    placeholder="密码"
+                    @input="handlePasswordInput"
+                    @keydown.enter.prevent
+                  />
                 </n-form-item>
                 <n-form-item ref="rPasswordFormItemRef" first path="rePassword">
-                  <n-input v-model:value="registForm.rePassword" :disabled="!registForm.password" type="password"
-                    @keydown.enter.prevent />
+                  <n-input
+                    v-model:value="registForm.rePassword"
+                    :disabled="!registForm.password"
+                    type="password"
+                    placeholder="确认密码"
+                    @keydown.enter.prevent
+                  />
                 </n-form-item>
                 <n-form-item path="email">
                   <n-input v-model:value="registForm.email" placeholder="邮箱" />
@@ -180,17 +200,6 @@ const closeModal = () => {
 h1 {
   font-size: 40px;
   text-align: center;
-}
-
-.wrapper {
-  //background: #50a3a2;
-  //background: -webkit-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  //background: -moz-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  //background: -o-linear-gradient(top left, #50a3a2 0%, #53e3a6 100%);
-  //background: linear-gradient(to bottom right, #50a3a2 0%, #53e3a6 100%);
-  //background-image: conic-gradient(#f0d9b5 25%, #b58863 0% 50%, #f0d9b5 50% 75%, #b58863 75%);
-  //background-image: conic-gradient(#50a3a2 25%, #53e3a6 0% 50%, #50a3a2 50% 75%, #53e3a6 75%);
-  //background-size: 300px 300px;
 }
 
 .login-wrap {
@@ -228,17 +237,17 @@ form {
     cursor: pointer;
   }
 
-  .sign-in:checked+.tab,
-  .sign-up:checked+.tab {
+  .sign-in:checked + .tab,
+  .sign-up:checked + .tab {
     font-weight: bold;
     border-color: #1161ee;
   }
 
-  .sign-in:checked+.tab+.sign-up+.tab+.login-form .sign-in-htm {
+  .sign-in:checked + .tab + .sign-up + .tab + .login-form .sign-in-htm {
     transform: rotate(0);
   }
 
-  .sign-up:checked+.tab+.login-form .sign-up-htm {
+  .sign-up:checked + .tab + .login-form .sign-up-htm {
     transform: rotate(0);
   }
 }
