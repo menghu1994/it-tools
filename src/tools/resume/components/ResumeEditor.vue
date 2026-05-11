@@ -19,6 +19,7 @@ const resumeOptions = computed(() => store.resumeList.map(item => ({
   label: item.title,
   value: item.id,
 })));
+const resumePageRef = ref<HTMLElement | null>(null);
 
 const templateMap = {
   standard: StandardLayout,
@@ -79,6 +80,78 @@ async function onDeleteResume() {
     },
   });
 }
+
+function exportPdf() {
+  const resumePage = resumePageRef.value;
+  if (!resumePage) {
+    message.error('简历内容尚未渲染完成');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank', 'width=900,height=1200');
+  if (!printWindow) {
+    message.error('无法打开打印窗口，请检查浏览器拦截设置');
+    return;
+  }
+
+  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map(node => node.outerHTML)
+    .join('\n');
+  const title = store.resume.title || '未命名简历';
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>${title}</title>
+        ${styles}
+        <style>
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
+          html, body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+          }
+
+          .print-shell {
+            width: 700px;
+            margin: 0 auto;
+          }
+
+          .print-shell .resume-page {
+            width: 700px !important;
+            min-height: auto !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="print-shell">${resumePage.outerHTML}</div>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+
+  const triggerPrint = () => {
+    printWindow.print();
+    printWindow.close();
+  };
+
+  if (printWindow.document.readyState === 'complete') {
+    triggerPrint();
+  }
+  else {
+    printWindow.onload = triggerPrint;
+  }
+}
 </script>
 
 <template>
@@ -108,6 +181,9 @@ async function onDeleteResume() {
           <c-button @click="onCreateResume">
             新建
           </c-button>
+          <c-button @click="exportPdf">
+            导出 PDF
+          </c-button>
           <c-button :disabled="!store.isDirty || store.saving" type="primary" @click="onSaveResume">
             保存
           </c-button>
@@ -118,7 +194,7 @@ async function onDeleteResume() {
       </div>
     </n-card>
 
-    <div class="resume-page">
+    <div ref="resumePageRef" class="resume-page">
       <component :is="templateMap[activeTemplate]" :data="resumeData" @editModule="openEdit" />
     </div>
 

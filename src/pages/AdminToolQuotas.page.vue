@@ -196,9 +196,16 @@ onMounted(loadAll);
           <template #checked>管控</template>
           <template #unchecked>不管控</template>
         </n-switch>
-        <n-input-number v-model:value="accessDraft.dailyLimit" :min="0" :precision="0" placeholder="日额度" />
-        <n-input-number v-model:value="accessDraft.costPerUse" :min="0" :precision="0" placeholder="超额单价" />
-        <n-input-number v-model:value="accessDraft.advancedCost" :min="0" :precision="0" placeholder="高级单价" />
+        <n-form-item label="日额度" label-placement="left" label-width="120">
+          <n-input-number v-model:value="accessDraft.dailyLimit" :min="0" :precision="0" placeholder="日额度" />
+        </n-form-item>
+        <n-form-item label="超额单价" label-placement="left" label-width="120">
+          <n-input-number v-model:value="accessDraft.costPerUse" :min="0" :precision="0" placeholder="超额单价" />
+        </n-form-item>
+        <n-form-item label="超额单价" label-placement="left" label-width="120">
+          <n-input-number v-model:value="accessDraft.advancedCost" :min="0" :precision="0" placeholder="高级单价" />
+        </n-form-item>
+
         <c-button :disabled="saving" @click="saveAccess">保存全局规则</c-button>
       </div>
     </section>
