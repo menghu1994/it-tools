@@ -1,148 +1,306 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useNotes, type Note } from './useNotes';
-import { DeleteOutlineRound, AddCircleOutlineTwotone, ArrowBackIosNewSharp } from '@vicons/material';
+import { AddCircleOutlineTwotone, DeleteOutlineRound } from '@vicons/material';
 import Editor from '@/tools/html-wysiwyg-editor/editor/editor.vue';
+import { useNotes, type Note, type NoteCategory } from './useNotes';
+
+const message = useMessage();
+const dialog = useDialog();
 
 const {
   notes,
-  cateGorys,
+  categories,
+  categoryNames,
   searchNoteTitle,
-  showNotes,
+  selectedCategory,
   totalPages,
+  totalCount,
   page,
-  addNote,
-  deleteNote,
+  loading,
+  fetchNotes,
+  fetchCategories,
+  saveNote: persistNote,
+  deleteNote: removeNote,
   addCategory,
   deleteCategory,
-  getCateLength,
-  fetchNotes,
-  fetchCategories
 } = useNotes();
 
-const showCateGoryItem = ref(false);
-const cateGorysSource = ref<Note[]>([]);
-const curNote = ref<Note>({ title: '', content: '', category: '未分类' });
+const currentNote = ref<Note>(makeEmptyNote());
+const categoryName = ref('');
 
-onMounted(() => {
-  fetchNotes();
-  fetchCategories();
-});
+const categoryOptions = computed(() =>
+  categoryNames.value.map(name => ({ label: name, value: name })),
+);
 
-const switchNote = (note: Note) => {
-  curNote.value = { ...note };
-};
+function makeEmptyNote(): Note {
+  return {
+    title: '',
+    content: '',
+    category: '未分类',
+  };
+}
 
-const newNote = () => {
-  curNote.value = { title: '', content: '', category: '未分类' };
-};
+async function loadData() {
+  await Promise.all([fetchCategories(), fetchNotes()]);
+}
 
-const saveNote = async () => {
-  await addNote(curNote.value);
-  curNote.value = { title: '', content: '', category: '未分类' };
+function switchNote(note: Note) {
+  currentNote.value = { ...note };
+}
+
+function newNote() {
+  currentNote.value = makeEmptyNote();
+}
+
+async function saveNote() {
+  if (!currentNote.value.title.trim()) {
+    message.warning('请输入标题');
+    return;
+  }
+
+  await persistNote(currentNote.value);
+  message.success('笔记已保存');
+  if (!currentNote.value._id && !currentNote.value.id) {
+    newNote();
+  }
+}
+
+function confirmDeleteNote(note: Note) {
+  dialog.warning({
+    title: '删除笔记',
+    content: `确定删除「${note.title}」吗？`,
+    positiveText: '删除',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      await removeNote(note);
+      if ((currentNote.value._id || currentNote.value.id) === (note._id || note.id)) {
+        newNote();
+      }
+      message.success('笔记已删除');
+    },
+  });
+}
+
+async function createCategory() {
+  if (!categoryName.value.trim()) {
+    message.warning('请输入分类名称');
+    return;
+  }
+  await addCategory(categoryName.value);
+  categoryName.value = '';
+  message.success('分类已添加');
+}
+
+function confirmDeleteCategory(category: NoteCategory) {
+  dialog.warning({
+    title: '删除分类',
+    content: `确定删除「${category.name}」吗？该分类下的笔记会移动到未分类。`,
+    positiveText: '删除',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      await deleteCategory(category);
+      if (currentNote.value.category === category.name) {
+        currentNote.value.category = '未分类';
+      }
+      message.success('分类已删除');
+    },
+  });
+}
+
+async function search() {
+  page.value = 1;
   await fetchNotes();
-};
+}
 
-const onShowCategory = (cate: string) => {
-  cateGorysSource.value = notes.value.filter(note => note.category === cate);
-  showCateGoryItem.value = true;
-};
+watch(page, fetchNotes);
+watch(selectedCategory, search);
+
+onMounted(loadData);
 </script>
 
 <template>
-  <div flex gap-2 justify-center class="w-full">
-    <!-- 左侧分类/列表 -->
-    <c-card style="width: 300px;">
-      <n-tabs type="line" animated class="h-full" :pane-wrapper-style="{ height: '100%' }">
-
-        <n-tab-pane name="config" tab="全部" :display-directive="'show'" h-full>
-          <div flex flex-col justify-between h-full>
-            <div flex flex-col>
-              <c-input-text v-model:value="searchNoteTitle" mb-2 placeholder="搜索" clearable></c-input-text>
-              <div style="min-height: 300px" flex flex-col gap-1>
-                <div v-for="(note, noteIndex) in showNotes" flex justify-between items-center gap-2 class="note-item">
-                  <n-ellipsis :line-clamp="1" flex-1 cursor-pointer>
-                    <span @click="switchNote(note)">
-                      {{ note.title }}
-                    </span>
-                  </n-ellipsis>
-                  <c-button circle @click="deleteNote(noteIndex)">
-                    <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
-                  </c-button>
-                </div>
-              </div>
-            </div>
-            <div flex justify-between items-center>
-              <span>共 {{ notes.length }} 篇</span>
-              <n-pagination v-model:page="page" :page-count="totalPages" simple />
-            </div>
-          </div>
-        </n-tab-pane>
-
-        <n-tab-pane name="module" tab="分类">
-          <template v-if="!showCateGoryItem">
-            <div v-for="cate in cateGorys" :key="cate" flex justify-between items-center cursor-pointer
-              @click="onShowCategory(cate)" class="note-item">
-              <div flex flex-col p-2 border-2px border-gray-300>
-                <span font-bold>{{ cate }}</span>
-                <span>{{ getCateLength(cate) }}篇记事</span>
-              </div>
-              <c-button circle v-if="cate !== '未分类'" @click.stop="deleteCategory(cate)">
-                <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
-              </c-button>
-            </div>
-            <c-button @click="addCategory(prompt('请输入分类名') || '')">
-              <n-icon :component="AddCircleOutlineTwotone" size="18"></n-icon>
-              新增分类
-            </c-button>
-          </template>
-
-          <div v-else flex flex-col gap-1>
-            <c-button @click="showCateGoryItem = false;" mb2>
-              <n-icon :component="ArrowBackIosNewSharp" size="18"></n-icon>
-              返回
-            </c-button>
-            <div v-for="value in cateGorysSource" flex justify-between items-center class="note-item">
-              <n-ellipsis :line-clamp="1" flex-1 cursor-pointer>
-                <span @click="switchNote(value)">{{ value.title }}</span>
-              </n-ellipsis>
-              <c-button circle>
-                <n-icon :component="DeleteOutlineRound" size="18"></n-icon>
-              </c-button>
-            </div>
-          </div>
-        </n-tab-pane>
-
-        <template #suffix>
-          <c-button @click="newNote">
-            <n-icon :component="AddCircleOutlineTwotone" size="18" circle></n-icon>
-          </c-button>
-        </template>
-      </n-tabs>
-    </c-card>
-
-    <!-- 右侧编辑区 -->
-    <c-card style="width: 700px;">
-      <div flex justify-between items-center>
-        <c-input-text v-model:value="curNote.title" placeholder="标题" style="width: 300px;" />
-        <div flex gap-2 items-center>
-          <c-select v-model:value="curNote.category" searchable :options="cateGorys" placeholder="选择分类"/>
-          <c-button :disabled="!curNote?.title" @click="saveNote">保存</c-button>
-        </div>
+  <div class="note-book w-full">
+    <section class="side-panel">
+      <div class="toolbar">
+        <n-input v-model:value="searchNoteTitle" clearable placeholder="搜索标题" @keyup.enter="search" />
+        <c-button @click="search">搜索</c-button>
+        <c-button @click="newNote">
+          <n-icon :component="AddCircleOutlineTwotone" />
+        </c-button>
       </div>
-      <Editor v-model:html="curNote.content" />
-    </c-card>
+
+      <n-tabs type="line" animated>
+        <n-tab-pane name="notes" tab="全部笔记">
+          <n-spin :show="loading">
+            <div class="note-list">
+              <div
+                v-for="note in notes"
+                :key="note._id || note.id"
+                class="note-item"
+                :class="{ active: (currentNote._id || currentNote.id) === (note._id || note.id) }"
+                @click="switchNote(note)"
+              >
+                <div class="note-summary">
+                  <strong>{{ note.title }}</strong>
+                  <span>{{ note.category }}</span>
+                </div>
+                <c-button circle variant="text" @click.stop="confirmDeleteNote(note)">
+                  <n-icon :component="DeleteOutlineRound" />
+                </c-button>
+              </div>
+
+              <n-empty v-if="notes.length === 0" description="暂无笔记" />
+            </div>
+          </n-spin>
+
+          <div class="pager">
+            <span>共 {{ totalCount }} 条</span>
+            <n-pagination v-model:page="page" :page-count="totalPages" simple />
+          </div>
+        </n-tab-pane>
+
+        <n-tab-pane name="categories" tab="分类">
+          <div class="category-create">
+            <n-input v-model:value="categoryName" clearable placeholder="新分类名称" @keyup.enter="createCategory" />
+            <c-button @click="createCategory">添加</c-button>
+          </div>
+
+          <div class="category-list">
+            <div
+              class="category-item"
+              :class="{ active: selectedCategory === null }"
+              @click="selectedCategory = null"
+            >
+              <span>全部</span>
+            </div>
+            <div
+              v-for="category in categories"
+              :key="category._id"
+              class="category-item"
+              :class="{ active: selectedCategory === category.name }"
+              @click="selectedCategory = category.name"
+            >
+              <span>{{ category.name }}</span>
+              <c-button
+                v-if="category.name !== '未分类'"
+                circle
+                variant="text"
+                @click.stop="confirmDeleteCategory(category)"
+              >
+                <n-icon :component="DeleteOutlineRound" />
+              </c-button>
+            </div>
+          </div>
+        </n-tab-pane>
+      </n-tabs>
+    </section>
+
+    <section class="editor-panel">
+      <div class="editor-header">
+        <n-input v-model:value="currentNote.title" placeholder="标题" />
+        <n-select
+          v-model:value="currentNote.category"
+          filterable
+          :options="categoryOptions"
+          placeholder="选择分类"
+        />
+        <c-button :disabled="!currentNote.title" @click="saveNote">保存</c-button>
+      </div>
+      <Editor v-model:html="currentNote.content" />
+    </section>
   </div>
 </template>
 
 <style scoped lang="less">
-.note-item {
-  padding: 0.4rem 0.5rem;
-  border-radius: 4px;
+.note-book {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 760px);
+  gap: 16px;
+  justify-content: center;
+}
 
-  &:hover {
-    background-color: #f5f5f5;
-    color: #333;
+.side-panel,
+.editor-panel {
+  border: 1px solid var(--n-border-color);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--n-color);
+}
+
+.toolbar,
+.editor-header,
+.category-create {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.note-list,
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 280px;
+}
+
+.note-item,
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.note-item:hover,
+.note-item.active,
+.category-item:hover,
+.category-item.active {
+  background: rgba(24, 160, 88, 0.12);
+}
+
+.note-summary {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  span {
+    color: var(--n-text-color-3);
+    font-size: 12px;
+  }
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: var(--n-text-color-3);
+}
+
+.editor-header {
+  margin-bottom: 12px;
+
+  .n-input {
+    flex: 1;
+  }
+
+  .n-select {
+    width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
+  .note-book {
+    grid-template-columns: 1fr;
   }
 }
 </style>

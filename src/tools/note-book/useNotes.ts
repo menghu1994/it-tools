@@ -1,95 +1,120 @@
-import { ref, computed, watchEffect } from 'vue';
-import {noteService} from '@/api/note/note.service';
-import {categoryService} from '@/api/note/category.service';
+import { computed, ref } from 'vue';
+import { categoryService } from '@/api/note/category.service';
+import { noteService } from '@/api/note/note.service';
 
 export interface Note {
-  id?: string;
-  title: string;
-  content: string;
-  category?: string;
+  _id?: string
+  id?: string
+  title: string
+  content: string
+  category: string
+  updatedAt?: string
+}
+
+export interface NoteCategory {
+  _id: string
+  id: string
+  name: string
 }
 
 export function useNotes() {
-  const cateGorys = ref<string[]>([]);
+  const categories = ref<NoteCategory[]>([]);
   const notes = ref<Note[]>([]);
   const searchNoteTitle = ref('');
+  const selectedCategory = ref<string | null>(null);
   const page = ref(1);
-  const itemPerPage = 10;
+  const pageSize = ref(10);
+  const totalCount = ref(0);
+  const loading = ref(false);
 
-  const filterNotes = ref<Note[]>([]);
-  const totalPages = computed(() => Math.ceil(filterNotes.value.length / itemPerPage));
-  const showNotes = computed(() =>
-    filterNotes.value.slice((page.value - 1) * itemPerPage, page.value * itemPerPage)
-  );
+  const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)));
+  const categoryNames = computed(() => categories.value.map(category => category.name));
 
-  watchEffect(() => {
-    filterNotes.value = notes.value.filter(note =>
-      note.title.toLowerCase().includes(searchNoteTitle.value.toLowerCase())
-    );
-  });
-
-  const fetchNotes = async () => {
-    const { data } = await noteService.query();
-    notes.value = data;
-  };
-
-  const fetchCategories = async () => {
-    const { data } = await categoryService.query();
-    cateGorys.value = data;
-  };
-
-  const addNote = async (note: Note) => {
-    const exists = notes.value.find(n => n.title === note.title);
-    if (exists) {
-      exists.content = note.content;
-      exists.category = note.category;
-      await noteService.update(exists.id!, exists);
-    } else {
-      const { data } = await noteService.create(note);
-      notes.value.push(data);
+  async function fetchNotes() {
+    loading.value = true;
+    try {
+      const res = await noteService.query({
+        keyword: searchNoteTitle.value || undefined,
+        category: selectedCategory.value || undefined,
+        page: page.value - 1,
+        size: pageSize.value,
+      });
+      notes.value = res.data || [];
+      totalCount.value = Number(res.headers?.['x-total-count'] || notes.value.length);
+    } finally {
+      loading.value = false;
     }
-  };
+  }
 
-  const deleteNote = async (noteIndex: number) => {
-    const curIndex = (page.value - 1) * itemPerPage + noteIndex;
-    const note = notes.value[curIndex];
-    await noteService.delete(note.id!);
-    notes.value.splice(curIndex, 1);
-  };
+  async function fetchCategories() {
+    const { data } = await categoryService.query();
+    categories.value = data || [];
+  }
 
-  const addCategory = async (cate: string) => {
-    if (!cate || cateGorys.value.includes(cate)) return;
-    cateGorys.value.push(cate);
-    // await axios.post('/api/categories', { name: cate });
-    await categoryService.create({ name: cate });
-  };
+  async function saveNote(note: Note) {
+    const payload = {
+      title: note.title,
+      content: note.content || '',
+      category: note.category || '未分类',
+    };
+    if (note._id || note.id) {
+      await noteService.update((note._id || note.id)!, payload);
+    } else {
+      await noteService.create(payload);
+    }
+    await fetchNotes();
+  }
 
-  const deleteCategory = async (cate: string) => {
-    cateGorys.value = cateGorys.value.filter(c => c !== cate);
-    notes.value.forEach(note => {
-      if (note.category === cate) note.category = '未分类';
-    });
-    // await axios.delete(`/api/categories/${cate}`);
-    await categoryService.delete(cate);
-  };
+  async function deleteNote(note: Note) {
+    const id = note._id || note.id;
+    if (!id) {
+      return;
+    }
+    await noteService.delete(id);
+    if (notes.value.length === 1 && page.value > 1) {
+      page.value -= 1;
+    }
+    await fetchNotes();
+  }
 
-  const getCateLength = (cate: string) =>
-    notes.value.filter(note => note.category === cate).length;
+  async function addCategory(name: string) {
+    const value = name.trim();
+    if (!value || categories.value.some(category => category.name === value)) {
+      return;
+    }
+    await categoryService.create({ name: value });
+    await fetchCategories();
+  }
+
+  async function deleteCategory(category: NoteCategory) {
+    await categoryService.delete(category._id || category.id);
+    if (selectedCategory.value === category.name) {
+      selectedCategory.value = null;
+    }
+    await Promise.all([fetchCategories(), fetchNotes()]);
+  }
+
+  function getCategoryCount(name: string) {
+    return notes.value.filter(note => note.category === name).length;
+  }
 
   return {
+    categories,
+    categoryNames,
     notes,
-    cateGorys,
     searchNoteTitle,
-    filterNotes,
-    showNotes,
+    selectedCategory,
     totalPages,
+    totalCount,
     page,
+    pageSize,
+    loading,
     fetchNotes,
     fetchCategories,
-    addNote,
+    saveNote,
     deleteNote,
     addCategory,
     deleteCategory,
-    getCateLength,
+    getCategoryCount,
   };
 }
