@@ -32,6 +32,14 @@ class ItToolsService {
     });
   }
 
+  toolAccess(toolKey: string) {
+    return request({
+      url: '/it-tools/access',
+      method: 'GET',
+      params: { toolKey },
+    });
+  }
+
   consumeAdvancedFeature(toolKey: string, featureKey: string, cost = 1) {
     return request({
       url: '/it-tools/usage/advanced',
@@ -68,6 +76,28 @@ class ItToolsService {
       url: '/it-tools/admin/tool-quotas',
       method: 'GET',
       params,
+    });
+  }
+
+  adminToolAccess() {
+    return request({
+      url: '/it-tools/admin/tool-access',
+      method: 'GET',
+    });
+  }
+
+  saveToolAccess(data: {
+    toolKey: string
+    controlled?: boolean
+    loginRequired?: boolean
+    dailyLimit?: number
+    costPerUse?: number
+    advancedCost?: number
+  }) {
+    return request({
+      url: '/it-tools/admin/tool-access',
+      method: 'POST',
+      data,
     });
   }
 

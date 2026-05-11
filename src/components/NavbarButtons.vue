@@ -71,6 +71,10 @@ async function logout() {
             <n-icon :component="IconSettings" />
             <span>额度管理</span>
           </li>
+          <li v-if="isAdmin" class="cursor-pointer menu-item" @click="router.push('/admin/comments')">
+            <n-icon :component="IconSettings" />
+            <span>评论管理</span>
+          </li>
           <li class="cursor-pointer menu-item" @click="logout()">退出</li>
         </ul>
       </div>

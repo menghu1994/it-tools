@@ -48,6 +48,11 @@ const router = createRouter({
       name: 'admin-tool-quotas',
       component: () => import('./pages/AdminToolQuotas.page.vue'),
     },
+    {
+      path: '/admin/comments',
+      name: 'admin-comments',
+      component: () => import('./pages/AdminComments.page.vue'),
+    },
     ...toolsRoutes,
     ...toolsRedirectRoutes,
     ...(config.app.env === 'development' ? demoRoutes : []),
@@ -62,37 +67,49 @@ async function enterToolRoute(path: string, userStore: ReturnType<typeof useUser
   }
 }
 
+async function resolveToolAccess(path: string) {
+  const res = await itToolsService.toolAccess(path);
+  return res.data || { controlled: false, loginRequired: false };
+}
+
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
   const modalStore = useLoginModalStore();
-  if (((to.meta?.meta as any)?.needLogin || to.meta?.isTool || to.name === 'user' || to.name === 'admin-tool-quotas') && !userStore.user) {
-    const result = await modalStore.open();
-    if (result) {
-      if (to.meta?.isTool) {
-        try {
-          await enterToolRoute(to.path, userStore);
-        } catch (error: any) {
-          if (error?.response?.status === 402) {
-            next('/user');
-            return;
-          }
+  if (to.meta?.isTool) {
+    try {
+      const access = await resolveToolAccess(to.path);
+      const shouldGate = access.loginRequired || access.controlled;
+      if (!shouldGate) {
+        next();
+        return;
+      }
+
+      if (!userStore.user) {
+        const result = await modalStore.open();
+        if (!result) {
           next(false);
           return;
         }
       }
-      next();
-    } else {
-      next(false);
-    }
-  } else if (to.meta?.isTool && userStore.user) {
-    try {
+
       await enterToolRoute(to.path, userStore);
       next();
+      return;
     } catch (error: any) {
       if (error?.response?.status === 402) {
         next('/user');
         return;
       }
+      next(false);
+      return;
+    }
+  }
+
+  if (((to.meta?.meta as any)?.needLogin || to.name === 'user' || to.name === 'admin-tool-quotas' || to.name === 'admin-comments') && !userStore.user) {
+    const result = await modalStore.open();
+    if (result) {
+      next();
+    } else {
       next(false);
     }
   } else {

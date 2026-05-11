@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     '404.page': typeof import('./src/pages/404.page.vue')['default']
     About: typeof import('./src/pages/About.vue')['default']
+    'AdminComments.page': typeof import('./src/pages/AdminComments.page.vue')['default']
     'AdminToolQuotas.page': typeof import('./src/pages/AdminToolQuotas.page.vue')['default']
     App: typeof import('./src/App.vue')['default']
     'Base.layout': typeof import('./src/layouts/base.layout.vue')['default']
@@ -202,6 +203,7 @@ declare module '@vue/runtime-core' {
     NSelect: typeof import('naive-ui')['NSelect']
     NSlider: typeof import('naive-ui')['NSlider']
     NSpace: typeof import('naive-ui')['NSpace']
+    NSpin: typeof import('naive-ui')['NSpin']
     NStatistic: typeof import('naive-ui')['NStatistic']
     NSwitch: typeof import('naive-ui')['NSwitch']
     NTable: typeof import('naive-ui')['NTable']

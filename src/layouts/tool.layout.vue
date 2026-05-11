@@ -5,6 +5,7 @@ import type { HeadObject } from '@vueuse/head';
 
 import BaseLayout from './base.layout.vue';
 import FavoriteButton from '@/components/FavoriteButton.vue';
+import Comment from '@/components/Comment/Comment.vue';
 import type { Tool } from '@/tools/tools.types';
 
 const route = useRoute();
@@ -55,7 +56,7 @@ const toolDescription = computed<string>(() => String(route.meta.description));
       <slot />
     </div>
 
-<!--  TODO  评论功能  -->
+    <Comment :tool-key="route.path" />
   </BaseLayout>
 </template>
 
