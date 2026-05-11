@@ -1,52 +1,54 @@
+<script setup lang="ts">
+import PersonalModule from '../../module/personalModule.vue';
+import campusModule from '../../module/campusModule.vue';
+import educationModule from '../../module/educationModule.vue';
+import honorModule from '../../module/honorModule.vue';
+import objectiveModule from '../../module/objectiveModule.vue';
+import projectModule from '../../module/projectModule.vue';
+import skillModule from '../../module/skillModule.vue';
+import workModule from '../../module/workModule.vue';
+
+const props = defineProps({
+  data: { type: Array, default: () => [] },
+});
+
+defineEmits<{
+  editModule: [moduleKey: string]
+}>();
+
+const leftCompMap: Record<string, any> = {
+  skills: skillModule,
+  honor: honorModule,
+  education: educationModule,
+  objective: objectiveModule,
+};
+
+const rightCompMap: Record<string, any> = {
+  work: workModule,
+  project: projectModule,
+  campus: campusModule,
+};
+
+const personData = computed(() => props.data.find((item: any) => item.key === 'personal')?.value);
+const leftModules = computed(() => props.data.filter((item: any) => !!leftCompMap[item.key]));
+const rightModules = computed(() => props.data.filter((item: any) => !!rightCompMap[item.key]));
+</script>
+
 <template>
   <div class="resume-simple">
-    <!-- 个人信息头部 -->
     <div class="left-container container-common">
-      <PersonalModule :value="personData" @click="$emit('editModule', 'personal')"></PersonalModule>
-      <template v-for="m in props.data" :key="m.key">
-        <component :is="leftCompMap[m.key]" :value="m.value" @click="$emit('editModule', m.key)"></component>
+      <PersonalModule :value="personData" @click="$emit('editModule', 'personal')" />
+      <template v-for="moduleItem in leftModules" :key="moduleItem.key">
+        <component :is="leftCompMap[moduleItem.key]" :value="moduleItem.value" @click="$emit('editModule', moduleItem.key)" />
       </template>
     </div>
     <div class="right-container container-common">
-      <template v-for="m in props.data" :key="m.key">
-        <component :is="rightCompMap[m.key]" :value="m.value" @click="$emit('editModule', m.key)"></component>
+      <template v-for="moduleItem in rightModules" :key="moduleItem.key">
+        <component :is="rightCompMap[moduleItem.key]" :value="moduleItem.value" @click="$emit('editModule', moduleItem.key)" />
       </template>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import PersonalModule from '../../module/personalModule.vue'
-import workModule from '../../module/workModule.vue'
-import skillModule from '../../module/skillModule.vue'
-import honorModule from '../../module/honorModule.vue'
-import campusModule from '../../module/campusModule.vue'
-import projectModule from '../../module/projectModule.vue'
-import objectiveModule from '../../module/objectiveModule.vue'
-import educationModule from '../../module/educationModule.vue'
-
-const props = defineProps({
-  data: { type: Array, default: () => [] }
-});
-
-const leftCompMap: any = {
-  skills: skillModule,
-  honor: honorModule,
-  education: educationModule,
-  objective: objectiveModule
-}
-
-const rightCompMap: any = {
-  work: workModule,
-  project: projectModule,
-  campus: campusModule,
-}
-
-const personData = computed(() => {
-  return props.data.find(m => m.key === 'personal')?.value
-})
-
-</script>
 
 <style lang="less">
 .resume-simple {

@@ -1,12 +1,12 @@
-import { ArrowsShuffle } from '@vicons/tabler';
+import { Id } from '@vicons/tabler';
 import { defineTool } from '../tool';
 
 export const tool = defineTool({
-  name: '简历',
+  name: '简历制作',
   path: '/resume',
-  description: '开发中...',
-  keywords: ['resume'],
+  description: '在线编辑并保存你的简历草稿',
+  keywords: ['resume', 'cv', '简历'],
   component: () => import('./resume.vue'),
-  icon: ArrowsShuffle,
+  icon: Id,
   createdAt: new Date('2025-09-16'),
 });

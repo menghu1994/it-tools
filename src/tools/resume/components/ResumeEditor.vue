@@ -1,93 +1,167 @@
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useDialog, useMessage } from 'naive-ui';
+import StandardLayout from './layouts/StandardLayout.vue';
+import SimpleLayout from './layouts/SimpleLayout.vue';
+import ModuleFormDialog from './ModuleFormDialog.vue';
+import { useUserStore } from '@/stores/user.store';
+import { useResumeStore } from '@/stores/resume.store';
+import type { ModuleKey } from '@/tools/resume/resume.type';
+
+const store = useResumeStore();
+const userStore = useUserStore();
+const message = useMessage();
+const dialog = useDialog();
+
+const resumeData = ref<{ key: ModuleKey; value: any }[]>([]);
+const activeTemplate = computed(() => store.resume.template);
+const resumeOptions = computed(() => store.resumeList.map(item => ({
+  label: item.title,
+  value: item.id,
+})));
+
+const templateMap = {
+  standard: StandardLayout,
+  simple: SimpleLayout,
+};
+
+async function renderModules() {
+  const currentResume = store.resume;
+  resumeData.value = currentResume.modulesOrder
+    .filter(moduleKey => moduleKey === 'personal' || currentResume.modulesVisible[moduleKey])
+    .map(moduleKey => ({
+      key: moduleKey,
+      value: currentResume.data[moduleKey],
+    }));
+}
+
+onMounted(async () => {
+  await store.init();
+  await renderModules();
+});
+
+watch(() => store.resume, renderModules, { deep: true });
+
+const formVisible = ref(false);
+const editingModule = ref<ModuleKey | ''>('');
+
+function openEdit(moduleKey: ModuleKey) {
+  editingModule.value = moduleKey;
+  formVisible.value = true;
+}
+
+async function onSelectResume(value: string | null) {
+  if (!value) {
+    return;
+  }
+  await store.loadResume(value);
+}
+
+async function onCreateResume() {
+  await store.createResume(`我的简历 ${store.resumeList.length + 1}`);
+  message.success(userStore.user ? '已创建新简历' : '已创建本地草稿');
+}
+
+async function onSaveResume() {
+  await store.saveCurrentResume();
+  message.success(userStore.user ? '简历已保存' : '草稿已保存到本地');
+}
+
+async function onDeleteResume() {
+  dialog.warning({
+    title: '删除简历',
+    content: `确认删除“${store.resume.title}”吗？`,
+    positiveText: '删除',
+    negativeText: '取消',
+    async onPositiveClick() {
+      await store.deleteCurrentResume();
+      message.success('简历已删除');
+    },
+  });
+}
+</script>
+
 <template>
-  <div style="display:flex; flex-direction:column; gap:12px;">
-    <!--    <div style="display:flex; gap:8px; align-items:center;">-->
-    <!--      <n-button @click="exportPdf">导出 PDF</n-button>-->
-    <!--    </div>-->
+  <div class="resume-editor">
+    <n-card>
+      <div class="toolbar">
+        <div class="toolbar__left">
+          <n-input
+            :value="store.resume.title"
+            placeholder="输入简历标题"
+            class="toolbar__title"
+            @update:value="store.updateTitle($event)"
+          />
+          <n-select
+            v-if="userStore.user"
+            :value="store.resume.id"
+            :options="resumeOptions"
+            placeholder="选择简历"
+            clearable
+            class="toolbar__select"
+            @update:value="onSelectResume"
+          />
+          <span v-else class="toolbar__hint">未登录时仅保存在当前浏览器</span>
+        </div>
+
+        <div class="toolbar__actions">
+          <c-button @click="onCreateResume">
+            新建
+          </c-button>
+          <c-button :disabled="!store.isDirty || store.saving" type="primary" @click="onSaveResume">
+            保存
+          </c-button>
+          <c-button v-if="userStore.user && store.resume.id" :disabled="store.deleting" @click="onDeleteResume">
+            删除
+          </c-button>
+        </div>
+      </div>
+    </n-card>
 
     <div class="resume-page">
       <component :is="templateMap[activeTemplate]" :data="resumeData" @editModule="openEdit" />
     </div>
-    <ModuleFormDialog v-model:show="formVisible" :moduleKey="editingModule" :initial="editingData" @save="onSave" />
+
+    <ModuleFormDialog v-model:show="formVisible" :module-key="editingModule" />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue';
-import StandardLayout from './layouts/StandardLayout.vue';
-import SimpleLayout from './layouts/SimpleLayout.vue';
-import ModuleFormDialog from './ModuleFormDialog.vue';
-import { useResumeStore } from '@/stores/resume.store';
-import type { ModuleKey } from '@/tools/resume/resume.type';
-// import html2canvas from 'html2canvas';
-// import jsPDF from 'jspdf';
-
-const store = useResumeStore();
-store.init();
-
-const resumeData = ref<{ key: ModuleKey, value: any }[]>([]);
-const activeTemplate = computed(() => store.resume.template);
-
-const templateMap: Record<string, any> = {
-  standard: StandardLayout,
-  simple: SimpleLayout,
-  elegant: StandardLayout
-}
-
-async function renders() {
-  const r = store.resume;
-
-  resumeData.value = r.modulesOrder.filter(m => m ==='personal' || r.modulesVisible[m]).map(moduleKey => ({
-    key: moduleKey,
-    value: r.data[moduleKey]
-  }))
-
-}
-
-
-onMounted(async () => {
-  await renders();
-  console.error(resumeData.value, '123')
-});
-
-watch(() => store.resume, async () => {
-  await renders();
-}, { deep: true });
-
-/* 表单弹窗相关 */
-const formVisible = ref(false);
-const editingModule = ref('');
-const editingData = ref<any>(null);
-function openEdit(moduleKey: string, data: any) {
-  editingModule.value = moduleKey;
-  editingData.value = data;
-  formVisible.value = true;
-}
-async function onSave({ moduleKey, payload }: any) {
-  // await store.saveModuleData(moduleKey, payload);
-  store.saveData(moduleKey, payload)
-  formVisible.value = false;
-  await renders();
-}
-
-/* PDF 导出：把每个 page DOM 转为 canvas 然后合并到 PDF */
-async function exportPdf() {
-  // const pagesEls = Array.from(document.querySelectorAll('.resume-page')) as HTMLElement[];
-  // const pdf = new jsPDF('p', 'pt', 'a4'); // a4 size
-  // for(let i=0;i<pagesEls.length;i++){
-  //   const el = pagesEls[i];
-  //   const canvas = await html2canvas(el, { scale:2 });
-  //   const imgData = canvas.toDataURL('image/png');
-  //   const imgProps = (pdf as any).getImageProperties(imgData);
-  //   const pdfWidth = pdf.internal.pageSize.getWidth();
-  //   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-  //   if (i>0) pdf.addPage();
-  //   pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-  // }
-  // pdf.save(`resume-${store.resume.id || 'me'}.pdf`);
-}
-</script>
-
 <style lang="less">
+.resume-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar__left,
+.toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar__title {
+  width: 220px;
+}
+
+.toolbar__select {
+  width: 220px;
+}
+
+.toolbar__hint {
+  color: var(--n-text-color-3);
+  font-size: 13px;
+}
+
 .resume-page {
   width: 700px;
   min-height: 990px;
@@ -95,7 +169,6 @@ async function exportPdf() {
   background: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   position: relative;
-
   font-family: 'PingFang SC', 'Helvetica Neue', Arial;
   color: #222;
   font-size: 13px;
@@ -108,7 +181,7 @@ async function exportPdf() {
     cursor: pointer;
 
     .second-color {
-      color: #5c6166
+      color: #5c6166;
     }
 
     .module-title {
@@ -134,7 +207,7 @@ async function exportPdf() {
   }
 
   .example {
-    color: #999
+    color: #999;
   }
 
   .module-body {

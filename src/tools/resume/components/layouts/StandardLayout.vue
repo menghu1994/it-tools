@@ -1,42 +1,43 @@
-<template>
-  <div class="resume-standard">
-    <!-- 个人信息头部 -->
-    <PersonalModule :value="personData" @click="$emit('editModule', 'personal')"></PersonalModule>
-    <template v-for="m in props.data" :key="m.key">
-      <component :is="compMap[m.key]" :value="m.value" @click="$emit('editModule', m.key)"></component>
-    </template>
-  </div>
-</template>
-
 <script setup lang="ts">
-import PersonalModule from '../../module/personalModule.vue'
-import workModule from '../../module/workModule.vue'
-import skillModule from '../../module/skillModule.vue'
-import honorModule from '../../module/honorModule.vue'
-import campusModule from '../../module/campusModule.vue'
-import projectModule from '../../module/projectModule.vue'
-import objectiveModule from '../../module/objectiveModule.vue'
-import educationModule from '../../module/educationModule.vue'
+import PersonalModule from '../../module/personalModule.vue';
+import campusModule from '../../module/campusModule.vue';
+import educationModule from '../../module/educationModule.vue';
+import honorModule from '../../module/honorModule.vue';
+import objectiveModule from '../../module/objectiveModule.vue';
+import projectModule from '../../module/projectModule.vue';
+import skillModule from '../../module/skillModule.vue';
+import workModule from '../../module/workModule.vue';
 
 const props = defineProps({
-  data: { type: Array, default: () => [] }
+  data: { type: Array, default: () => [] },
 });
 
-const compMap: any = {
+defineEmits<{
+  editModule: [moduleKey: string]
+}>();
+
+const compMap: Record<string, any> = {
   work: workModule,
   skills: skillModule,
   project: projectModule,
   honor: honorModule,
   campus: campusModule,
   education: educationModule,
-  objective: objectiveModule
-}
+  objective: objectiveModule,
+};
 
-const personData = computed(() => {
-  return props.data.find(m => m.key === 'personal')?.value
-})
-
+const personData = computed(() => props.data.find((item: any) => item.key === 'personal')?.value);
+const modules = computed(() => props.data.filter((item: any) => !!compMap[item.key]));
 </script>
+
+<template>
+  <div class="resume-standard">
+    <PersonalModule :value="personData" @click="$emit('editModule', 'personal')" />
+    <template v-for="moduleItem in modules" :key="moduleItem.key">
+      <component :is="compMap[moduleItem.key]" :value="moduleItem.value" @click="$emit('editModule', moduleItem.key)" />
+    </template>
+  </div>
+</template>
 
 <style lang="less" scoped>
 .resume-standard {
